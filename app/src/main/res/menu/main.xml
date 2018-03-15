@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:icon="@drawable/ic_search_black_24dp"
+        android:id="@+id/action_search"
+        android:orderInCategory="100"
+        android:title="@string/action_settings"
+        app:showAsAction="always" />
+
+    <item
+        android:icon="@drawable/ic_sort_by_alpha_black_24dp"
+        android:id="@+id/action_sort"
+        android:orderInCategory="100"
+        android:title="@string/action_sort"
+        app:showAsAction="always" >
+
+        <menu>
+            <item android:title="按名称排序"
+                app:showAsAction="ifRoom" />
+
+            <item android:title="按文件大小排序"
+                app:showAsAction="ifRoom" />
+
+            <item android:title="按修改时间排序"
+                app:showAsAction="ifRoom" />
+
+        </menu>
+
+    </item>
+
+    <item
+        android:icon="@drawable/ic_file_upload_black_24dp"
+        android:id="@+id/action_upload"
+        android:orderInCategory="100"
+        android:title="@string/action_upload"
+        app:showAsAction="always">
+
+        <menu>
+            <item android:title="新建笔记"
+                app:showAsAction="ifRoom" />
+
+            <item android:title="新建文件夹"
+                app:showAsAction="ifRoom" />
+
+            <item android:title="上传图片"
+                app:showAsAction="ifRoom" />
+
+            <item android:title="上传视频"
+                app:showAsAction="ifRoom" />
+
+            <item android:title="上传文件"
+                app:showAsAction="ifRoom" />
+        </menu>
+    </item>
+
+
+
+</menu>
