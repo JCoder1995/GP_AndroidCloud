@@ -44,6 +44,7 @@
                 app:showAsAction="ifRoom" />
 
             <item android:title="上传图片"
+                android:id="@+id/menu_upload_file"
                 app:showAsAction="ifRoom" />
 
             <item android:title="上传文件"

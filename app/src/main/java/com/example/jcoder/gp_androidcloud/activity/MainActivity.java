@@ -9,18 +9,40 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
 
 import com.example.jcoder.gp_androidcloud.R;
+import com.example.jcoder.gp_androidcloud.utility.CustomHelper;
+import com.jph.takephoto.app.TakePhoto;
+import com.jph.takephoto.app.TakePhotoImpl;
+import com.jph.takephoto.model.InvokeParam;
+import com.jph.takephoto.model.TContextWrap;
+import com.jph.takephoto.model.TResult;
+import com.jph.takephoto.permission.InvokeListener;
+import com.jph.takephoto.permission.PermissionManager;
+import com.jph.takephoto.permission.TakePhotoInvocationHandler;
 import com.leon.lfilepickerlibrary.LFilePicker;
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
-
+        implements NavigationView.OnNavigationItemSelectedListener,TakePhoto.TakeResultListener,InvokeListener {
+     private static final String TAG = MainActivity.class.getName();
+     private TakePhoto takePhoto;
+     private InvokeParam invokeParam;
+     private CustomHelper customHelper;
+     private Button uploadPhoto;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        //加载TakePhoto框架
+        getTakePhoto().onCreate(savedInstanceState);
         super.onCreate(savedInstanceState);
+        //获取拍照布局
+        View contentView= LayoutInflater.from(this).inflate(R.layout.common_layout,null);
+
         setContentView(R.layout.activity_main);
         //设置Toolbar
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -34,7 +56,30 @@ public class MainActivity extends AppCompatActivity
         //加载导航栏布局
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
+        uploadPhoto=(Button)findViewById(R.id.btnPickBySelect);
     }
+
+    @Override
+    public void onSaveInstanceState(Bundle outPersistentState) {
+        getTakePhoto().onSaveInstanceState(outPersistentState);
+        super.onSaveInstanceState(outPersistentState);
+    }
+
+    //返回结果集
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        getTakePhoto().onActivityResult(requestCode, resultCode, data);
+        super.onActivityResult(requestCode, resultCode, data);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        PermissionManager.TPermissionType type=PermissionManager.onRequestPermissionsResult(requestCode,permissions,grantResults);
+        PermissionManager.handlePermissionsResult(this,type,invokeParam,this);
+    }
+
 
     //监听返回键 如果导航栏在开启状态 自动回退导航栏
     @Override
@@ -82,6 +127,10 @@ public class MainActivity extends AppCompatActivity
                      .withFileSize(500 * 1024)//指定文件大小为500K
                      .start();
          }
+         else if (id == R.id.menu_upload_file){
+             //模拟按钮点击
+             uploadPhoto.performClick();
+         }
         return super.onOptionsItemSelected(item);
     }
 
@@ -114,5 +163,36 @@ public class MainActivity extends AppCompatActivity
     public void intentActivity(Activity needIntentActivity){
         Intent intent = new Intent(MainActivity.this,needIntentActivity.getClass());
         startActivity(intent);
+    }
+
+    public TakePhoto getTakePhoto(){
+        if (takePhoto==null){
+            takePhoto= (TakePhoto) TakePhotoInvocationHandler.of(this).bind(new TakePhotoImpl(this,this));
+        }
+        return takePhoto;
+    }
+
+    @Override
+    public void takeSuccess(TResult result) {
+        Log.i(TAG,"takeSuccess：" + result.getImage().getCompressPath());
+    }
+
+    @Override
+    public void takeFail(TResult result, String msg) {
+        Log.i(TAG, "takeFail:" + msg);
+    }
+
+    @Override
+    public void takeCancel() {
+        Log.i(TAG, getResources().getString(R.string.msg_operation_canceled));
+    }
+
+    @Override
+    public PermissionManager.TPermissionType invoke(InvokeParam invokeParam) {
+        PermissionManager.TPermissionType type=PermissionManager.checkPermission(TContextWrap.of(this),invokeParam.getMethod());
+        if(PermissionManager.TPermissionType.WAIT.equals(type)){
+            this.invokeParam=invokeParam;
+        }
+        return type;
     }
 }
