@@ -46,10 +46,8 @@
             <item android:title="上传图片"
                 app:showAsAction="ifRoom" />
 
-            <item android:title="上传视频"
-                app:showAsAction="ifRoom" />
-
             <item android:title="上传文件"
+                android:id="@+id/upload_file"
                 app:showAsAction="ifRoom" />
         </menu>
     </item>

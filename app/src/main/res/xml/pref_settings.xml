@@ -46,6 +46,7 @@
     </PreferenceCategory>
     <!-- 单独一个复选框 -->
     <PreferenceCategory android:title="关于">
+    </PreferenceCategory>
         <PreferenceScreen
             android:summary="0.1"
             android:title="版本信息"></PreferenceScreen>
@@ -54,7 +55,7 @@
             android:title="报告错误"></PreferenceScreen>
 
 
-    </PreferenceCategory>
+
 
 
 </PreferenceScreen>

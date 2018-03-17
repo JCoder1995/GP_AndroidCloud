@@ -13,6 +13,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.example.jcoder.gp_androidcloud.R;
+import com.leon.lfilepickerlibrary.LFilePicker;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -70,6 +71,17 @@ public class MainActivity extends AppCompatActivity
             return true;
         }
        */
+
+         if(id == R.id.upload_file){
+             int REQUESTCODE_FROM_ACTIVITY = 1000;
+             new LFilePicker()
+                     .withActivity(MainActivity.this)
+                     .withRequestCode(REQUESTCODE_FROM_ACTIVITY)
+                     .withStartPath("/storage/emulated/0/Download")//指定初始显示路径
+                     .withIsGreater(false)//过滤文件大小 小于指定大小的文件
+                     .withFileSize(500 * 1024)//指定文件大小为500K
+                     .start();
+         }
         return super.onOptionsItemSelected(item);
     }
 
