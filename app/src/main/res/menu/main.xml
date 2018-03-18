@@ -2,14 +2,14 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
-        android:icon="@drawable/ic_search_black_24dp"
+        android:icon="@drawable/ic_search_white_24dp"
         android:id="@+id/action_search"
         android:orderInCategory="100"
         android:title="@string/action_settings"
         app:showAsAction="always" />
 
     <item
-        android:icon="@drawable/ic_sort_by_alpha_black_24dp"
+        android:icon="@drawable/ic_sort_by_alpha_white_24dp"
         android:id="@+id/action_sort"
         android:orderInCategory="100"
         android:title="@string/action_sort"
@@ -30,7 +30,7 @@
     </item>
 
     <item
-        android:icon="@drawable/ic_file_upload_black_24dp"
+        android:icon="@drawable/ic_file_upload_white_24dp"
         android:id="@+id/action_upload"
         android:orderInCategory="100"
         android:title="@string/action_upload"

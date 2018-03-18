@@ -33,4 +33,6 @@ dependencies {
     implementation 'com.android.support:mediarouter-v7:26.1.0'
     implementation 'com.leon:lfilepickerlibrary:1.7.0'
     implementation 'com.jph.takephoto:takephoto_library:4.0.3'
+    compile 'com.scwang.smartrefresh:SmartRefreshLayout:1.1.0-alpha-1'
+    compile 'com.scwang.smartrefresh:SmartRefreshHeader:1.1.0-alpha-1'//没有使用特殊Header，可以不加这行
 }
