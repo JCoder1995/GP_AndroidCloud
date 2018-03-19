@@ -3,11 +3,15 @@ package com.example.jcoder.gp_androidcloud.activity;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.LayoutRes;
+import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -16,6 +20,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 
+import com.chad.library.adapter.base.BaseQuickAdapter;
+import com.chad.library.adapter.base.BaseViewHolder;
 import com.example.jcoder.gp_androidcloud.R;
 import com.example.jcoder.gp_androidcloud.utility.CustomHelper;
 import com.jph.takephoto.app.TakePhoto;
@@ -27,16 +33,19 @@ import com.jph.takephoto.permission.InvokeListener;
 import com.jph.takephoto.permission.PermissionManager;
 import com.jph.takephoto.permission.TakePhotoInvocationHandler;
 import com.leon.lfilepickerlibrary.LFilePicker;
-import com.scwang.smartrefresh.layout.api.RefreshLayout;
-import com.scwang.smartrefresh.layout.listener.OnRefreshListener;
+
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener,TakePhoto.TakeResultListener,InvokeListener {
      private static final String TAG = MainActivity.class.getName();
      private TakePhoto takePhoto;
      private InvokeParam invokeParam;
-     private CustomHelper customHelper;
      private Button uploadPhoto;
+     //文件显示相关
+     private RecyclerView recyclerView;
+     private FileAdapter fileAdapter;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         //加载TakePhoto框架
@@ -59,17 +68,12 @@ public class MainActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
+        //上传图片
         uploadPhoto=(Button)findViewById(R.id.btnPickBySelect);
 
-        RefreshLayout refreshLayout = (RefreshLayout)findViewById(R.id.refreshLayout);
-        refreshLayout.setOnRefreshListener(new OnRefreshListener() {
-            @Override
-            public void onRefresh(RefreshLayout refreshlayout) {
-                refreshlayout.finishRefresh(2000/*,false*/);//传入false表示刷新失败
-            }
-        });
     }
 
+    //获取TakePhoto实例
     @Override
     public void onSaveInstanceState(Bundle outPersistentState) {
         getTakePhoto().onSaveInstanceState(outPersistentState);
@@ -170,11 +174,6 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
-    public void intentActivity(Activity needIntentActivity){
-        Intent intent = new Intent(MainActivity.this,needIntentActivity.getClass());
-        startActivity(intent);
-    }
-
     public TakePhoto getTakePhoto(){
         if (takePhoto==null){
             takePhoto= (TakePhoto) TakePhotoInvocationHandler.of(this).bind(new TakePhotoImpl(this,this));
@@ -205,4 +204,24 @@ public class MainActivity extends AppCompatActivity
         }
         return type;
     }
+
+    //加载文件显示
+    private void initFileView(){
+        recyclerView = (RecyclerView)findViewById(R.id.main_recycler);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+    }
+    //文件Adapter
+    public class FileAdapter extends BaseQuickAdapter<String,BaseViewHolder>{
+
+        public FileAdapter(@LayoutRes int layoutResId, @Nullable List<String> data) {
+            super(layoutResId, data);
+        }
+
+        @Override
+        protected void convert(BaseViewHolder helper, String item) {
+
+        }
+    }
+
+
 }
