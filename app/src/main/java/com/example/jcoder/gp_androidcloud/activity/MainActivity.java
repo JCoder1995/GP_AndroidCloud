@@ -19,11 +19,14 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Toast;
 
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
 import com.example.jcoder.gp_androidcloud.R;
+import com.example.jcoder.gp_androidcloud.enity.FileList;
 import com.example.jcoder.gp_androidcloud.utility.CustomHelper;
+import com.guanaj.easyswipemenulibrary.EasySwipeMenuLayout;
 import com.jph.takephoto.app.TakePhoto;
 import com.jph.takephoto.app.TakePhotoImpl;
 import com.jph.takephoto.model.InvokeParam;
@@ -34,6 +37,7 @@ import com.jph.takephoto.permission.PermissionManager;
 import com.jph.takephoto.permission.TakePhotoInvocationHandler;
 import com.leon.lfilepickerlibrary.LFilePicker;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity
@@ -44,7 +48,10 @@ public class MainActivity extends AppCompatActivity
      private Button uploadPhoto;
      //文件显示相关
      private RecyclerView recyclerView;
-     private FileAdapter fileAdapter;
+     private List<String> listData;
+     private LayoutInflater inflater;
+     private MyAdapter myAdapter;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,6 +78,8 @@ public class MainActivity extends AppCompatActivity
         //上传图片
         uploadPhoto=(Button)findViewById(R.id.btnPickBySelect);
 
+        initFileView();
+        initIData();
     }
 
     //获取TakePhoto实例
@@ -205,23 +214,65 @@ public class MainActivity extends AppCompatActivity
         return type;
     }
 
+
+
     //加载文件显示
     private void initFileView(){
         recyclerView = (RecyclerView)findViewById(R.id.main_recycler);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        myAdapter = new MyAdapter(R.layout.file_list_show, null);
+        recyclerView.setAdapter(myAdapter);
+        inflater = getLayoutInflater();
     }
-    //文件Adapter
-    public class FileAdapter extends BaseQuickAdapter<String,BaseViewHolder>{
 
-        public FileAdapter(@LayoutRes int layoutResId, @Nullable List<String> data) {
+    //初始化数据
+    private void initIData() {
+        listData = new ArrayList<>();
+        for (int i = 0; i < 20; i++) {
+            listData.add("index is =" + i);
+        }
+        myAdapter.addData(listData);
+        myAdapter.notifyDataSetChanged();
+    }
+
+
+    //文件Adapter
+    public class MyAdapter extends BaseQuickAdapter<String, BaseViewHolder> {
+
+
+        public MyAdapter(@LayoutRes int layoutResId, @Nullable List<String> data) {
             super(layoutResId, data);
         }
 
         @Override
-        protected void convert(BaseViewHolder helper, String item) {
+        protected void convert(final BaseViewHolder helper, final String item) {
+
+            helper.getView(R.id.checkbox).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Toast.makeText(MainActivity.this,"点击了CheckBox"+item,Toast.LENGTH_SHORT).show();
+
+                }
+            });
+
+            helper.getView(R.id.right_menu_2).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Toast.makeText(MainActivity.this, "收藏"+item, Toast.LENGTH_SHORT).show();
+                    EasySwipeMenuLayout easySwipeMenuLayout = helper.getView(R.id.es);
+
+                    easySwipeMenuLayout.resetStatus();
+                }
+            });
+            helper.getView(R.id.content).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Toast.makeText(MainActivity.this, "setOnClickListener", Toast.LENGTH_SHORT).show();
+
+                }
+            });
 
         }
+
     }
-
-
 }
