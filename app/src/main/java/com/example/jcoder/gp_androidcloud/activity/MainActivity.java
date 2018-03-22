@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.LayoutRes;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -59,24 +60,25 @@ public class MainActivity extends AppCompatActivity
         getTakePhoto().onCreate(savedInstanceState);
         super.onCreate(savedInstanceState);
         //获取拍照布局
-        View contentView= LayoutInflater.from(this).inflate(R.layout.common_layout,null);
+      //  View contentView= LayoutInflater.from(this).inflate(R.layout.common_layout,null);
 
         setContentView(R.layout.activity_main);
         //设置Toolbar
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         //设置可滑动按钮 开启导航栏
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
         toggle.syncState();
         //加载导航栏布局
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
         //上传图片
-        uploadPhoto=(Button)findViewById(R.id.btnPickBySelect);
+        uploadPhoto= findViewById(R.id.btnPickBySelect);
+
 
         initFileView();
         initIData();
@@ -97,7 +99,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         PermissionManager.TPermissionType type=PermissionManager.onRequestPermissionsResult(requestCode,permissions,grantResults);
         PermissionManager.handlePermissionsResult(this,type,invokeParam,this);
@@ -107,7 +109,7 @@ public class MainActivity extends AppCompatActivity
     //监听返回键 如果导航栏在开启状态 自动回退导航栏
     @Override
     public void onBackPressed() {
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
@@ -159,7 +161,7 @@ public class MainActivity extends AppCompatActivity
 
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
-    public boolean onNavigationItemSelected(MenuItem item) {
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
@@ -178,7 +180,7 @@ public class MainActivity extends AppCompatActivity
 
         }
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
@@ -218,7 +220,7 @@ public class MainActivity extends AppCompatActivity
 
     //加载文件显示
     private void initFileView(){
-        recyclerView = (RecyclerView)findViewById(R.id.main_recycler);
+        recyclerView = findViewById(R.id.main_recycler);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         myAdapter = new MyAdapter(R.layout.file_list_show, null);
         recyclerView.setAdapter(myAdapter);
@@ -240,7 +242,7 @@ public class MainActivity extends AppCompatActivity
     public class MyAdapter extends BaseQuickAdapter<String, BaseViewHolder> {
 
 
-        public MyAdapter(@LayoutRes int layoutResId, @Nullable List<String> data) {
+        MyAdapter(@LayoutRes int layoutResId, @Nullable List<String> data) {
             super(layoutResId, data);
         }
 
