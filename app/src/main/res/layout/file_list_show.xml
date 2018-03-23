@@ -11,7 +11,7 @@
     <com.guanaj.easyswipemenulibrary.EasySwipeMenuLayout
         android:id="@+id/es"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         app:contentView="@+id/content"
         app:rightMenuView="@+id/right">
 
@@ -22,44 +22,67 @@
             android:background="#FFFFFF"
             android:orientation="horizontal"
             >
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="内容区域" />
-            <CheckBox
-                android:id="@+id/checkbox"
+            <ImageView
+                android:id="@+id/file_list_icon"
+                android:layout_weight="1"
+                android:src="@drawable/ic_access_time_black_24dp"
+                android:layout_gravity="center"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
+            <LinearLayout
+                android:layout_weight="5"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+                <TextView
+                    android:id="@+id/file_list_name"
+                    android:textSize="20sp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="文件名" />
 
+                <TextView
+                    android:id="@+id/file_list_time"
+                    android:textSize="15sp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="修改日期" />
 
+            </LinearLayout>
+
+            <CheckBox
+                android:id="@+id/file_list_select"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"/>
 
         </LinearLayout>
 
         <LinearLayout
             android:id="@+id/right"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@android:color/holo_red_light"
+            android:layout_height="match_parent"
             android:orientation="horizontal">
 
             <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@android:color/holo_blue_bright"
+                android:id="@+id/file_list_delete"
+                android:gravity="center"
+                android:layout_width="40dp"
+                android:layout_height="match_parent"
+                android:background="@android:color/holo_red_dark"
                 android:clickable="true"
-                android:padding="20dp"
                 android:text="删除" />
 
             <TextView
-                android:id="@+id/right_menu_2"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:id="@+id/file_list_collect"
+                android:gravity="center"
+                android:layout_width="40dp"
+                android:layout_height="match_parent"
                 android:background="@android:color/holo_orange_dark"
                 android:clickable="true"
-                android:padding="20dp"
                 android:text="收藏" />
 
         </LinearLayout>
+
     </com.guanaj.easyswipemenulibrary.EasySwipeMenuLayout>
 </LinearLayout>

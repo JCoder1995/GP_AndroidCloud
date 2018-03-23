@@ -43,7 +43,9 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener,TakePhoto.TakeResultListener,InvokeListener {
+     //获取当前Activity名称
      private static final String TAG = MainActivity.class.getName();
+     //获取TakePhoto
      private TakePhoto takePhoto;
      private InvokeParam invokeParam;
      private Button uploadPhoto;
@@ -249,7 +251,7 @@ public class MainActivity extends AppCompatActivity
         @Override
         protected void convert(final BaseViewHolder helper, final String item) {
 
-            helper.getView(R.id.checkbox).setOnClickListener(new View.OnClickListener() {
+            helper.getView(R.id.file_list_select).setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     Toast.makeText(MainActivity.this,"点击了CheckBox"+item,Toast.LENGTH_SHORT).show();
@@ -257,7 +259,7 @@ public class MainActivity extends AppCompatActivity
                 }
             });
 
-            helper.getView(R.id.right_menu_2).setOnClickListener(new View.OnClickListener() {
+            helper.getView(R.id.file_list_collect).setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     Toast.makeText(MainActivity.this, "收藏"+item, Toast.LENGTH_SHORT).show();
