@@ -54,7 +54,10 @@ public class MainActivity extends AppCompatActivity
      private List<String> listData;
      private LayoutInflater inflater;
      private MyAdapter myAdapter;
-
+     //定义单选多选状态
+     private boolean checkBoxIsSelect;
+     private int[] menuNameIsSelect;
+     private int[] menuNameNotSelect;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,7 +65,8 @@ public class MainActivity extends AppCompatActivity
         getTakePhoto().onCreate(savedInstanceState);
         super.onCreate(savedInstanceState);
         //获取拍照布局
-      //  View contentView= LayoutInflater.from(this).inflate(R.layout.common_layout,null);
+        // View contentView= LayoutInflater.from(this).inflate(R.layout.common_layout,null);
+        //初始化Menu
 
         setContentView(R.layout.activity_main);
         //设置Toolbar
@@ -80,10 +84,9 @@ public class MainActivity extends AppCompatActivity
 
         //上传图片
         uploadPhoto= findViewById(R.id.btnPickBySelect);
-
-
         initFileView();
         initIData();
+
     }
 
     //获取TakePhoto实例
@@ -124,6 +127,8 @@ public class MainActivity extends AppCompatActivity
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main, menu);
+        menuNameNotSelect= new int[]{R.id.action_search,R.id.action_sort,R.id.action_upload};
+
         return true;
     }
 
@@ -218,8 +223,6 @@ public class MainActivity extends AppCompatActivity
         return type;
     }
 
-
-
     //加载文件显示
     private void initFileView(){
         recyclerView = findViewById(R.id.main_recycler);
@@ -239,10 +242,8 @@ public class MainActivity extends AppCompatActivity
         myAdapter.notifyDataSetChanged();
     }
 
-
     //文件Adapter
     public class MyAdapter extends BaseQuickAdapter<String, BaseViewHolder> {
-
 
         MyAdapter(@LayoutRes int layoutResId, @Nullable List<String> data) {
             super(layoutResId, data);
@@ -275,8 +276,27 @@ public class MainActivity extends AppCompatActivity
 
                 }
             });
+        }
+    }
+
+    //重写onPrepareOptionsMenu方法
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        if (checkBoxIsSelect){
+
 
         }
+        else if (checkBoxIsSelect){
+
+        }
+        return super.onPrepareOptionsMenu(menu);
+    }
+    //设置正常Menu可见，选中不可见
+    public void notSelectMenu(){
+
+    }
+    //设置正常Menu不可见，选中可见
+    public void isSelectMenu(){
 
     }
 }
