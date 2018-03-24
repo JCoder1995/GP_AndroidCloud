@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.annotation.LayoutRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -26,7 +27,9 @@ import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
 import com.example.jcoder.gp_androidcloud.R;
 import com.example.jcoder.gp_androidcloud.enity.FileList;
+import com.example.jcoder.gp_androidcloud.fragment.HomeFragment;
 import com.example.jcoder.gp_androidcloud.utility.CustomHelper;
+import com.github.rubensousa.floatingtoolbar.FloatingToolbar;
 import com.guanaj.easyswipemenulibrary.EasySwipeMenuLayout;
 import com.jph.takephoto.app.TakePhoto;
 import com.jph.takephoto.app.TakePhotoImpl;
@@ -41,7 +44,11 @@ import com.leon.lfilepickerlibrary.LFilePicker;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity
+import me.yokeyword.fragmentation.BuildConfig;
+import me.yokeyword.fragmentation.Fragmentation;
+import me.yokeyword.fragmentation.SupportActivity;
+
+public class MainActivity extends SupportActivity
         implements NavigationView.OnNavigationItemSelectedListener,TakePhoto.TakeResultListener,InvokeListener {
      //获取当前Activity名称
      private static final String TAG = MainActivity.class.getName();
@@ -54,10 +61,8 @@ public class MainActivity extends AppCompatActivity
      private List<String> listData;
      private LayoutInflater inflater;
      private MyAdapter myAdapter;
-     //定义单选多选状态
-     private boolean checkBoxIsSelect;
-     private int[] menuNameIsSelect;
-     private int[] menuNameNotSelect;
+     //定义底端Toolbar显示
+     private FloatingToolbar mFloatingToolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,6 +77,7 @@ public class MainActivity extends AppCompatActivity
         //设置Toolbar
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
         //设置可滑动按钮 开启导航栏
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -86,6 +92,23 @@ public class MainActivity extends AppCompatActivity
         uploadPhoto= findViewById(R.id.btnPickBySelect);
         initFileView();
         initIData();
+        //设置底端Toolbar
+        mFloatingToolbar = findViewById(R.id.floatingToolbar);
+
+        mFloatingToolbar.setClickListener(new FloatingToolbar.ItemClickListener() {
+            @Override
+            public void onItemClick(MenuItem item) {
+                Toast.makeText(MainActivity.this,item.getItemId(),Toast.LENGTH_SHORT).show();
+
+
+            }
+
+            @Override
+            public void onItemLongClick(MenuItem item) {
+            Toast.makeText(MainActivity.this,"123123",Toast.LENGTH_SHORT).show();
+
+            }
+        });
 
     }
 
@@ -113,13 +136,15 @@ public class MainActivity extends AppCompatActivity
 
     //监听返回键 如果导航栏在开启状态 自动回退导航栏
     @Override
-    public void onBackPressed() {
+    public void onBackPressedSupport() {
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
+
             drawer.closeDrawer(GravityCompat.START);
         } else {
             super.onBackPressed();
         }
+        super.onBackPressedSupport();
     }
 
     //加载Menu
@@ -127,8 +152,6 @@ public class MainActivity extends AppCompatActivity
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main, menu);
-        menuNameNotSelect= new int[]{R.id.action_search,R.id.action_sort,R.id.action_upload};
-
         return true;
     }
 
@@ -228,7 +251,10 @@ public class MainActivity extends AppCompatActivity
         recyclerView = findViewById(R.id.main_recycler);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         myAdapter = new MyAdapter(R.layout.file_list_show, null);
+
         recyclerView.setAdapter(myAdapter);
+
+
         inflater = getLayoutInflater();
     }
 
@@ -256,6 +282,7 @@ public class MainActivity extends AppCompatActivity
                 @Override
                 public void onClick(View view) {
                     Toast.makeText(MainActivity.this,"点击了CheckBox"+item,Toast.LENGTH_SHORT).show();
+                    mFloatingToolbar.show();
 
                 }
             });
@@ -277,26 +304,5 @@ public class MainActivity extends AppCompatActivity
                 }
             });
         }
-    }
-
-    //重写onPrepareOptionsMenu方法
-    @Override
-    public boolean onPrepareOptionsMenu(Menu menu) {
-        if (checkBoxIsSelect){
-
-
-        }
-        else if (checkBoxIsSelect){
-
-        }
-        return super.onPrepareOptionsMenu(menu);
-    }
-    //设置正常Menu可见，选中不可见
-    public void notSelectMenu(){
-
-    }
-    //设置正常Menu不可见，选中可见
-    public void isSelectMenu(){
-
     }
 }
