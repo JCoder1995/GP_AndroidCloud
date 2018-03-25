@@ -6,6 +6,34 @@
     android:layout_height="match_parent"
     tools:context="com.example.jcoder.gp_androidcloud.activity.LauncherActivity">
 
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <ImageView
+            android:layout_weight="1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+           />
+        <ImageView
+            android:layout_weight="2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_cloud_queue_black_48dp"/>
+        <TextView
+            android:gravity="center"
+            android:text="欢迎使用效率云"
+            android:textSize="15sp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.5"/>
+        <ImageView
+            android:layout_weight="5"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            />
+    </LinearLayout>
+
 
 
 </android.support.constraint.ConstraintLayout>
