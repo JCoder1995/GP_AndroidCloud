@@ -43,7 +43,7 @@ interface RequestCallBack {
 }
 
 class Request extends Thread {
-    private static final int PAGE_SIZE = 6;
+    private static final int PAGE_SIZE = 10;
     private int mPage;
     private RequestCallBack mCallBack;
     private Handler mHandler;
@@ -179,6 +179,7 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onItemChildClick(BaseQuickAdapter adapter, View view, int position) {
                 Toast.makeText(MainActivity.this, "CheckBox"+Integer.toString(position), Toast.LENGTH_LONG).show();
+                popLayout.setVisibility(View.VISIBLE);
             }
 
         });
@@ -242,7 +243,7 @@ public class MainActivity extends AppCompatActivity
         if (size < PAGE_SIZE) {
             //第一页如果不够一页就不显示没有更多数据布局
             mAdapter.loadMoreEnd(isRefresh);
-            Toast.makeText(this, "no more data", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "没有更多了", Toast.LENGTH_SHORT).show();
         } else {
             mAdapter.loadMoreComplete();
         }

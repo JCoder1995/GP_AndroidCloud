@@ -90,7 +90,7 @@
                 android:textStyle="bold" />
 
             <Button
-
+                android:onClick="onButtonJumpToLogin"
                 android:layout_weight="1"
                 android:id="@+id/email_register_button"
                 style="?android:textAppearanceSmall"

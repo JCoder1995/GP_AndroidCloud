@@ -43,4 +43,7 @@ dependencies {
 
     //引用 Gson
     implementation 'com.google.code.gson:gson:2.8.2'
+    //网络上传框架
+    compile 'com.lzy.net:okgo:3.0.4'
+
 }
