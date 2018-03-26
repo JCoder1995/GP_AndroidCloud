@@ -54,7 +54,7 @@
             </LinearLayout>
 
             <CheckBox
-               android:layout_marginRight="5dp"
+                android:layout_marginRight="5dp"
                 android:id="@+id/file_list_select"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

@@ -45,5 +45,13 @@
 
     </style>
 
+    <style name="FileList">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:background">@color/file_list</item>
+        <item name="android:orientation">vertical</item>
+    </style>
+
+
 
 </resources>

@@ -6,4 +6,6 @@
 
     <color name="black_overlay">#0091EA</color>
     <color name="black">#000000</color>
+    <color name="file_list">#F0F0F0</color>
+
 </resources>
