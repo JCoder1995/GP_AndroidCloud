@@ -108,4 +108,5 @@
     <string name="press_again_exit">再按一次退出</string>
     <string name="prompt_phone">手机号</string>
     <string name="prompt_user">用户名</string>
+    <string name="prompt_nikName">真实姓名</string>
 </resources>

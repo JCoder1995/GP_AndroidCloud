@@ -12,7 +12,12 @@ import android.widget.Toast;
 
 import com.example.jcoder.gp_androidcloud.R;
 import com.example.jcoder.gp_androidcloud.utility.UserSharedHelper;
+import com.lzy.okgo.OkGo;
+import com.lzy.okgo.callback.StringCallback;
 
+import org.json.JSONObject;
+
+import java.io.IOException;
 import java.util.Map;
 
 
@@ -28,6 +33,12 @@ public class LauncherActivity extends AppCompatActivity {
         setContentView(R.layout.activity_launcher);
         hideToolbar();
         initActivity();
+        try {
+            login();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
     }
 
     //隐藏标题栏
@@ -63,8 +74,9 @@ public class LauncherActivity extends AppCompatActivity {
 
         }
     }
-
-    public void userLogin(String userName,String Password){
+    public void login() throws IOException {
+        OkGo.<String>post("http://192.168.179.64")
+                .execute();
 
     }
     }
