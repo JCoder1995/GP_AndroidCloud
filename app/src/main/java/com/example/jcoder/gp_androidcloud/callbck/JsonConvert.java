@@ -17,8 +17,6 @@ package com.example.jcoder.gp_androidcloud.callbck;
 
 
 
-import com.example.jcoder.gp_androidcloud.bean.BaseResponseBean;
-import com.example.jcoder.gp_androidcloud.bean.ResponseBean;
 import com.example.jcoder.gp_androidcloud.exception.MyException;
 import com.google.gson.stream.JsonReader;
 import com.lzy.okgo.convert.Converter;
@@ -134,6 +132,7 @@ public class JsonConvert<T> implements Converter<T> {
 
         Type rawType = type.getRawType();                     // 泛型的实际类型
         Type typeArgument = type.getActualTypeArguments()[0]; // 泛型的参数
+/*
         if (rawType != ResponseBean.class) {
             // 泛型格式如下： new JsonCallback<外层BaseBean<内层JavaBean>>(this)
             T t = Convert.fromJson(jsonReader, type);
@@ -159,6 +158,7 @@ public class JsonConvert<T> implements Converter<T> {
                 }
 
             }
-        }
+        }*/
+    return null;
     }
 }

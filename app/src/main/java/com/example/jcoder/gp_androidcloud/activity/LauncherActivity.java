@@ -6,9 +6,20 @@ import android.os.Handler;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import com.example.jcoder.gp_androidcloud.R;
-import com.example.jcoder.gp_androidcloud.utility.UserSharedHelper;
+import android.util.Log;
 
+
+import com.example.jcoder.gp_androidcloud.R;
+import com.example.jcoder.gp_androidcloud.bean.UserBean;
+import com.example.jcoder.gp_androidcloud.callbck.JsonCallback;
+import com.example.jcoder.gp_androidcloud.enity.User;
+import com.example.jcoder.gp_androidcloud.net.OkUtil;
+import com.example.jcoder.gp_androidcloud.utility.UserSharedHelper;
+import com.google.gson.Gson;
+import com.lzy.okgo.OkGo;
+import com.lzy.okgo.model.Response;
+
+import java.util.HashMap;
 import java.util.Map;
 
 public class LauncherActivity extends AppCompatActivity {
@@ -20,6 +31,7 @@ public class LauncherActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_launcher);
         hideToolbar();
@@ -56,7 +68,14 @@ public class LauncherActivity extends AppCompatActivity {
                 }
             }, 1000);
         } else {
-            //填写登陆操作
+            OkUtil.postLogin(email, psw, new JsonCallback<Object>() {
+                @Override
+                public void onSuccess(Response<Object> response) {
+                    Gson gson = new Gson();
+                    UserBean userBean = gson.fromJson(String.valueOf(response), UserBean.class);
+                }
+            });
         }
     }
+
     }

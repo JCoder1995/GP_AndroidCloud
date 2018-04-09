@@ -19,6 +19,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -28,11 +29,16 @@ import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import com.example.jcoder.gp_androidcloud.R;
+import com.example.jcoder.gp_androidcloud.callbck.JsonCallback;
+import com.example.jcoder.gp_androidcloud.net.OkUtil;
+import com.lzy.okgo.OkGo;
+import com.lzy.okgo.model.Response;
 
 import static android.Manifest.permission.READ_CONTACTS;
 
@@ -56,11 +62,14 @@ public class RegisterActivity extends AppCompatActivity implements LoaderCallbac
     /**
      * Keep track of the login task to ensure we can cancel it if requested.
      */
-    private UserLoginTask mAuthTask = null;
+    private UserRegisterTask mAuthTask = null;
 
     // UI references.
     private AutoCompleteTextView mEmailView;
     private EditText mPasswordView;
+    private EditText mRepeatPasswordView;
+    private EditText mPhoneView;
+    private EditText mNickNameView;
     private View mProgressView;
     private View mRegisterFormView;
 
@@ -70,9 +79,14 @@ public class RegisterActivity extends AppCompatActivity implements LoaderCallbac
         setContentView(R.layout.activity_register);
         // Set up the Register form.
         mEmailView = (AutoCompleteTextView) findViewById(R.id.register_email);
-        populateAutoComplete();
 
+        populateAutoComplete();
+        mRepeatPasswordView=(EditText) findViewById(R.id.register_password_repeat);
+        mPhoneView=(EditText) findViewById(R.id.register_phone);
+        mNickNameView=(EditText) findViewById(R.id.register_username);
         mPasswordView = (EditText) findViewById(R.id.register_password);
+
+
         mPasswordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView textView, int id, KeyEvent keyEvent) {
@@ -157,6 +171,9 @@ public class RegisterActivity extends AppCompatActivity implements LoaderCallbac
         // Store values at the time of the login attempt.
         String email = mEmailView.getText().toString();
         String password = mPasswordView.getText().toString();
+        String repeatpassword= mRepeatPasswordView.getText().toString();
+        String phone = mPhoneView.getText().toString();
+        String nickname = mNickNameView.getText().toString();
 
         boolean cancel = false;
         View focusView = null;
@@ -186,10 +203,17 @@ public class RegisterActivity extends AppCompatActivity implements LoaderCallbac
         } else {
             // Show a progress spinner, and kick off a background task to
             // perform the user login attempt.
-            showProgress(true);
-            mAuthTask = new UserLoginTask(email, password);
-            mAuthTask.execute((Void) null);
+
+
+           showProgress(true);
+
+            Toast.makeText(RegisterActivity.this,"登陆中",Toast.LENGTH_SHORT).show();
+            mAuthTask = new UserRegisterTask(email, password,phone,nickname);
+            mAuthTask.execute();
+
         }
+
+
     }
 
     private boolean isEmailValid(String email) {
@@ -296,36 +320,36 @@ public class RegisterActivity extends AppCompatActivity implements LoaderCallbac
      * Represents an asynchronous login/registration task used to authenticate
      * the user.
      */
-    public class UserLoginTask extends AsyncTask<Void, Void, Boolean> {
+    public class UserRegisterTask extends AsyncTask<Void, Void, Boolean> {
 
         private final String mEmail;
         private final String mPassword;
-
-        UserLoginTask(String email, String password) {
+        private final String mPhone;
+        private final String mNickName;
+        UserRegisterTask(String email, String password,String phone,String nickName) {
             mEmail = email;
             mPassword = password;
+            mPhone = phone;
+            mNickName =nickName;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
         }
 
         @Override
         protected Boolean doInBackground(Void... params) {
+            Log.e("error","AsyncTask in doInBackground begin");
             // TODO: attempt authentication against a network service.
+            // 运行在单独的工作线程中的，而不是运行在主线程中
+            OkUtil.postRegister(mEmail, mPassword, mNickName, mPhone, new JsonCallback<Object>() {
+                @Override
+                public void onSuccess(Response<Object> response) {
 
-            try {
-                // Simulate network access.
-                Thread.sleep(2000);
-            } catch (InterruptedException e) {
-                return false;
-            }
-
-            for (String credential : DUMMY_CREDENTIALS) {
-                String[] pieces = credential.split(":");
-                if (pieces[0].equals(mEmail)) {
-                    // Account exists, return true if the password matches.
-                    return pieces[1].equals(mPassword);
                 }
-            }
-
-            // TODO: register the new account here.
+            });
+            Log.e("asd","AsyncTask in doInBackground over");
             return true;
         }
 
@@ -337,6 +361,7 @@ public class RegisterActivity extends AppCompatActivity implements LoaderCallbac
             if (success) {
                 finish();
             } else {
+
                 mPasswordView.setError(getString(R.string.error_incorrect_password));
                 mPasswordView.requestFocus();
             }

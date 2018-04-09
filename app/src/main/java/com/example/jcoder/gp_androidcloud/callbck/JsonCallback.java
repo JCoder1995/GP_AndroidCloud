@@ -111,11 +111,11 @@ public abstract class JsonCallback<T> extends AbsCallback<T> {
             Log.d("JsonCallback", "服务器异常");
         } else if (response.getException() instanceof MyException) { //个人自定义 异常 根据后台 约定值判断异常雷系
 
-            switch (((MyException) response.getException()).getErrorBean().Code) {
+/*            switch (((MyException) response.getException()).getErrorBean().Code) {
                 case 107://约定的身份表示过期
                     //重登录
                     break;
-            }
+            }*/
 
         }
 
