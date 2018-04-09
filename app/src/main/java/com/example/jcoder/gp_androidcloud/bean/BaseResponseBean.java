@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.example.jcoder.gp_androidcloud.model;
+package com.example.jcoder.gp_androidcloud.bean;
 
 import java.io.Serializable;
 
@@ -26,17 +26,17 @@ import java.io.Serializable;
  * 修订历史：
  * ================================================
  */
-public class SimpleResponse implements Serializable {
+public class BaseResponseBean implements Serializable {
 
     private static final long serialVersionUID = -1477609349345966116L;
 
-    public int code;
-    public String msg;
+    public int Code;
+    public String Msg;
 
-    public LzyResponse toLzyResponse() {
-        LzyResponse lzyResponse = new LzyResponse();
-        lzyResponse.code = code;
-        lzyResponse.msg = msg;
-        return lzyResponse;
+    public ResponseBean toResponseBean() {
+        ResponseBean responseBean = new ResponseBean();
+        responseBean.Code = Code;
+        responseBean.Msg = Msg;
+        return responseBean;
     }
 }

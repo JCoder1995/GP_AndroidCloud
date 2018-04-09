@@ -101,7 +101,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     public void onButtonJumpToLogin(View view){
         Intent intent = new Intent(LoginActivity.this,RegisterActivity.class);
         startActivity(intent);
-        finish();
+     //  finish();
     }
 
     private void populateAutoComplete() {

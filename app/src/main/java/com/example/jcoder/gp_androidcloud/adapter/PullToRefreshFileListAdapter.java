@@ -1,19 +1,12 @@
 package com.example.jcoder.gp_androidcloud.adapter;
 
-import android.text.TextPaint;
-import android.text.style.ClickableSpan;
-import android.util.Log;
 import android.view.View;
-import android.widget.Toast;
 
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
 import com.example.jcoder.gp_androidcloud.R;
 import com.example.jcoder.gp_androidcloud.enity.FileList;
-import com.example.jcoder.gp_androidcloud.util.ToastUtils;
-import com.example.jcoder.gp_androidcloud.util.Utils;
 import com.guanaj.easyswipemenulibrary.EasySwipeMenuLayout;
-import com.orhanobut.logger.Logger;
 
 /**
  * Created by JCoder on 2018/3/26.

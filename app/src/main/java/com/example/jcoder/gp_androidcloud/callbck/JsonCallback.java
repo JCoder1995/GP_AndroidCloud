@@ -13,13 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.example.jcoder.gp_androidcloud.callback;
+package com.example.jcoder.gp_androidcloud.callbck;
 
+import android.util.Log;
+
+
+import com.example.jcoder.gp_androidcloud.exception.MyException;
+import com.example.jcoder.gp_androidcloud.util.LogUtils;
 import com.lzy.okgo.callback.AbsCallback;
 import com.lzy.okgo.request.base.Request;
 
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.net.SocketException;
+import java.net.SocketTimeoutException;
 
 import okhttp3.Response;
 
@@ -56,9 +63,9 @@ public abstract class JsonCallback<T> extends AbsCallback<T> {
         // 使用的设备信息
         // 可以随意添加,也可以什么都不传
         // 还可以在这里对所有的参数进行加密，均在这里实现
-        request.headers("header1", "HeaderValue1")//
-                .params("params1", "ParamsValue1")//
-                .params("token", "3215sdf13ad1f65asd4f3ads1f");
+//        request.headers("header1", "HeaderValue1")
+//                .params("params1", "ParamsValue1")
+//                .params("token", "3215sdf13ad1f65asd4f3ads1f");
     }
 
     /**
@@ -88,4 +95,30 @@ public abstract class JsonCallback<T> extends AbsCallback<T> {
         JsonConvert<T> convert = new JsonConvert<>(type);
         return convert.convertResponse(response);
     }
+
+    @Override
+    public void onError(com.lzy.okgo.model.Response<T> response) {
+        super.onError(response);
+        int code = response.code();
+        if (code == 404) {
+            LogUtils.debug("404 当前链接不存在");
+        }
+        Throwable exception = response.getException();
+
+        if (response.getException() instanceof SocketTimeoutException) {
+            Log.d("JsonCallback", "请求超时");
+        } else if (response.getException() instanceof SocketException) {
+            Log.d("JsonCallback", "服务器异常");
+        } else if (response.getException() instanceof MyException) { //个人自定义 异常 根据后台 约定值判断异常雷系
+
+            switch (((MyException) response.getException()).getErrorBean().Code) {
+                case 107://约定的身份表示过期
+                    //重登录
+                    break;
+            }
+
+        }
+
+    }
+
 }
