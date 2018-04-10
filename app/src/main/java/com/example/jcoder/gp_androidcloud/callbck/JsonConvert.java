@@ -17,6 +17,7 @@ package com.example.jcoder.gp_androidcloud.callbck;
 
 
 
+import com.example.jcoder.gp_androidcloud.bean.UserBean;
 import com.example.jcoder.gp_androidcloud.exception.MyException;
 import com.google.gson.stream.JsonReader;
 import com.lzy.okgo.convert.Converter;
@@ -132,8 +133,7 @@ public class JsonConvert<T> implements Converter<T> {
 
         Type rawType = type.getRawType();                     // 泛型的实际类型
         Type typeArgument = type.getActualTypeArguments()[0]; // 泛型的参数
-/*
-        if (rawType != ResponseBean.class) {
+        if (rawType != UserBean.class) {
             // 泛型格式如下： new JsonCallback<外层BaseBean<内层JavaBean>>(this)
             T t = Convert.fromJson(jsonReader, type);
             response.close();
@@ -141,16 +141,16 @@ public class JsonConvert<T> implements Converter<T> {
         } else {
             if (typeArgument == Void.class) {
                 // 泛型格式如下： new JsonCallback<ResponseBean<Void>>(this)
-                BaseResponseBean baseResponseBean = Convert.fromJson(jsonReader, BaseResponseBean.class);
+                UserBean baseResponseBean = Convert.fromJson(jsonReader, UserBean.class);
                 response.close();
                 //noinspection unchecked
                 return (T) baseResponseBean.toResponseBean();
             } else {
                 // 泛型格式如下： new JsonCallback<ResponseBean<内层JavaBean>>(this)
-                ResponseBean responseBean = Convert.fromJson(jsonReader, type);
+                UserBean responseBean = Convert.fromJson(jsonReader, type);
                 response.close();
-                int code = responseBean.Code;
-                String msg = responseBean.Msg;
+                int code = responseBean.code;
+                String msg = responseBean.msg;
                 if (code == 100) { //约定 正确返回码
                     return (T) responseBean;
                 } else{
@@ -158,7 +158,6 @@ public class JsonConvert<T> implements Converter<T> {
                 }
 
             }
-        }*/
-    return null;
+        }
     }
 }

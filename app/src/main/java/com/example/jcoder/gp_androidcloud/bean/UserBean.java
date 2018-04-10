@@ -8,4 +8,10 @@ public class UserBean {
         public int code;
         public String msg;
 
+        public UserBean toResponseBean() {
+                UserBean userBean = new UserBean();
+                userBean.code = code;
+                userBean.msg = msg;
+                return userBean;
+        }
 }

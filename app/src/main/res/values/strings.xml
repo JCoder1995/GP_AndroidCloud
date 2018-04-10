@@ -109,4 +109,10 @@
     <string name="prompt_phone">手机号</string>
     <string name="prompt_user">用户名</string>
     <string name="prompt_nikName">真实姓名</string>
+    <string name="connect_Error">网络连接超时 请检查网络连接</string>
+    <string name="connect_Success">网络连接正常</string>
+    <string name="connect_user_error">用户身份已过期,请重新登陆</string>
+    <string name="connect_user_success">登陆成功</string>
+
+
 </resources>

@@ -2,24 +2,22 @@ package com.example.jcoder.gp_androidcloud.activity;
 
 import android.content.Context;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Handler;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
+import android.widget.Toast;
 
 
 import com.example.jcoder.gp_androidcloud.R;
+import com.example.jcoder.gp_androidcloud.Task.LoginTask;
 import com.example.jcoder.gp_androidcloud.bean.UserBean;
 import com.example.jcoder.gp_androidcloud.callbck.JsonCallback;
-import com.example.jcoder.gp_androidcloud.enity.User;
 import com.example.jcoder.gp_androidcloud.net.OkUtil;
 import com.example.jcoder.gp_androidcloud.utility.UserSharedHelper;
-import com.google.gson.Gson;
-import com.lzy.okgo.OkGo;
 import com.lzy.okgo.model.Response;
 
-import java.util.HashMap;
 import java.util.Map;
 
 public class LauncherActivity extends AppCompatActivity {
@@ -29,6 +27,7 @@ public class LauncherActivity extends AppCompatActivity {
     private String email;
     private String psw;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -36,6 +35,7 @@ public class LauncherActivity extends AppCompatActivity {
         setContentView(R.layout.activity_launcher);
         hideToolbar();
         initActivity();
+        getConnect();
     }
 
     //隐藏标题栏
@@ -57,6 +57,7 @@ public class LauncherActivity extends AppCompatActivity {
         email = data.get("email");
         psw = data.get("psw");
 
+
         //如果用户信息为空 则进入登陆界面
         if (email == null||psw==null) {
             new Handler().postDelayed(new Runnable() {
@@ -68,14 +69,40 @@ public class LauncherActivity extends AppCompatActivity {
                 }
             }, 1000);
         } else {
-            OkUtil.postLogin(email, psw, new JsonCallback<Object>() {
+            LoginTask loginTask = new LoginTask(email,psw);
+            loginTask.setLoginCallBack(new LoginTask.LoginCallBack() {
                 @Override
-                public void onSuccess(Response<Object> response) {
-                    Gson gson = new Gson();
-                    UserBean userBean = gson.fromJson(String.valueOf(response), UserBean.class);
+                public void setBoolean(Boolean status) {
+                 if (status){
+                     Toast.makeText(LauncherActivity.this,getString(R.string.connect_user_success),Toast.LENGTH_SHORT).show();
+                     Intent intent = new Intent(LauncherActivity.this, MainActivity.class);
+                     startActivity(intent);
+                     finish();
+                 }
+                 else {
+                     Toast.makeText(LauncherActivity.this,getString(R.string.connect_user_error),Toast.LENGTH_SHORT).show();
+                     Intent intent = new Intent(LauncherActivity.this, LoginActivity.class);
+                     startActivity(intent);
+                     finish();
+                 }
                 }
             });
+            loginTask.execute();
         }
+    }
+
+    private void getConnect(){
+        OkUtil.postRequest(new JsonCallback<UserBean>() {
+            @Override
+            public void onSuccess(Response<UserBean> response) {
+                String a = response.body().msg;
+                Toast.makeText(LauncherActivity.this,getString(R.string.connect_Success),Toast.LENGTH_SHORT).show();
+            }
+            @Override
+            public void onError(Response<UserBean> response) {
+                Toast.makeText(LauncherActivity.this,getString(R.string.connect_Error),Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     }

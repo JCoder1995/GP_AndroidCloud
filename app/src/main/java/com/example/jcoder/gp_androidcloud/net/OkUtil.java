@@ -3,8 +3,10 @@ package com.example.jcoder.gp_androidcloud.net;
 
 import android.util.Log;
 
+import com.example.jcoder.gp_androidcloud.bean.UserBean;
 import com.example.jcoder.gp_androidcloud.callbck.JsonCallback;
 import com.lzy.okgo.OkGo;
+import com.lzy.okgo.callback.StringCallback;
 
 import java.util.Map;
 
@@ -24,32 +26,22 @@ public class OkUtil {
      * @param <T>
      */
 
-  private static String ip ="http://localhost";
+  private static String ip ="http://192.168.179.64:8081";
 
   private static String userLoginUrl = ip+"/user/login";
     private static String userRegisterUrl = ip+"/user/register";
 
     // 测试网络联通类
-    public static <T> void getRequets(String url, Object tag, Map<String, String> map, JsonCallback<T> callback) {
-        // TODO: 2017/10/13  加密 时间戳等 请求日志打印
-        Log.d("OkGoUtil", "method get");
-        OkGo.<T>get(url)
-                .tag(tag)
-                .params(map)
-                .execute(callback);
-    }
-    public static <T> void postRequest(String url, Object tag, Map<String, String> map, JsonCallback<T> callback) {
+    public static void postRequest(JsonCallback<UserBean> callback) {
         // TODO: 2017/10/13  加密 时间戳等 请求日志打印
         Log.d("OkGoUtil", "method post");
-        OkGo.<T>post(url)
-                .tag(tag)
-                .params(map)
+        OkGo.<UserBean>post(ip)
                 .execute(callback);
     }
     //用户登陆
-    public static <T> void postLogin(String userName, String passWord, JsonCallback<T> callback){
+    public static <T> void postLogin(String userName, String passWord, JsonCallback<UserBean> callback){
         Log.d("OkGoUtil", "用户登陆");
-        OkGo.<T>post(userLoginUrl)
+        OkGo.<UserBean>post(userLoginUrl)
                 .params("username",userName)
                 .params("passowrd",passWord)
                 .execute(callback);
