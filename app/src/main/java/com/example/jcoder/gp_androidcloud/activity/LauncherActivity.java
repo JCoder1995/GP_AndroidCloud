@@ -7,6 +7,7 @@ import android.os.Handler;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Toast;
 
 
@@ -27,39 +28,35 @@ public class LauncherActivity extends AppCompatActivity {
     private String email;
     private String psw;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_launcher);
         hideToolbar();
-        initActivity();
         getConnect();
+        initActivity();
     }
 
     //隐藏标题栏
     private void hideToolbar() {
-
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
             actionBar.hide();
         }
-
     }
+
     //启动Activity
     private void initActivity() {
-
         //获取用户信息
         mContext = getApplicationContext();
         userSharedHelper = new UserSharedHelper(mContext);
         Map<String, String> data = userSharedHelper.read();
-        email = data.get("email");
-        psw = data.get("psw");
-
+        email = data.get("username");
+        psw = data.get("password");
+        Log.e("errorinformation",email+psw);
 
         //如果用户信息为空 则进入登陆界面
-        if (email == null||psw==null) {
+        if (email == ""||psw=="") {
             new Handler().postDelayed(new Runnable() {
                 @Override
                 public void run() {
@@ -80,6 +77,7 @@ public class LauncherActivity extends AppCompatActivity {
                      finish();
                  }
                  else {
+                     userSharedHelper.delete();
                      Toast.makeText(LauncherActivity.this,getString(R.string.connect_user_error),Toast.LENGTH_SHORT).show();
                      Intent intent = new Intent(LauncherActivity.this, LoginActivity.class);
                      startActivity(intent);
@@ -95,7 +93,6 @@ public class LauncherActivity extends AppCompatActivity {
         OkUtil.postRequest(new JsonCallback<UserBean>() {
             @Override
             public void onSuccess(Response<UserBean> response) {
-                String a = response.body().msg;
                 Toast.makeText(LauncherActivity.this,getString(R.string.connect_Success),Toast.LENGTH_SHORT).show();
             }
             @Override
@@ -103,6 +100,6 @@ public class LauncherActivity extends AppCompatActivity {
                 Toast.makeText(LauncherActivity.this,getString(R.string.connect_Error),Toast.LENGTH_SHORT).show();
             }
         });
-    }
+     }
 
     }

@@ -3,6 +3,7 @@ package com.example.jcoder.gp_androidcloud.activity;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.support.annotation.NonNull;
@@ -40,6 +41,7 @@ import com.example.jcoder.gp_androidcloud.Task.LoginTask;
 import com.example.jcoder.gp_androidcloud.bean.UserBean;
 import com.example.jcoder.gp_androidcloud.callbck.JsonCallback;
 import com.example.jcoder.gp_androidcloud.net.OkUtil;
+import com.example.jcoder.gp_androidcloud.utility.UserSharedHelper;
 import com.google.gson.Gson;
 import com.lzy.okgo.OkGo;
 import com.lzy.okgo.model.Response;
@@ -67,6 +69,9 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     private View mProgressView;
     private View mLoginFormView;
     private LoginTask loginTask;
+    //用户存储
+    private UserSharedHelper userSharedHelper;
+    private Context mContext;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -166,8 +171,8 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         mPasswordView.setError(null);
 
         // Store values at the time of the login attempt.
-        String email = mEmailView.getText().toString();
-        String password = mPasswordView.getText().toString();
+        final String email = mEmailView.getText().toString();
+        final String password = mPasswordView.getText().toString();
 
         boolean cancel = false;
         View focusView = null;
@@ -199,22 +204,31 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             // perform the user login attempt.
             showProgress(true);
             loginTask = new LoginTask(email, password);
+            loginTask.execute();
             loginTask.setLoginCallBack(new LoginTask.LoginCallBack() {
                 @Override
                 public void setBoolean(Boolean status) {
+
+                    Log.e("1212121212", String.valueOf(status));
                     if (status){
+                        //获取用户信息
+                        Log.e("CallBack_Status", String.valueOf(status));
+                        mContext = getApplicationContext();
+                        userSharedHelper = new UserSharedHelper(mContext);
+                        userSharedHelper.save(email,password);
                         Toast.makeText(LoginActivity.this,getString(R.string.connect_user_success),Toast.LENGTH_SHORT).show();
                         Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                         startActivity(intent);
                         finish();
                     }
                     else {
+                        showProgress(false);
                         mPasswordView.setError(getString(R.string.error_incorrect_password));
                         mPasswordView.requestFocus();
                     }
                 }
             });
-            loginTask.execute((Void) null);
+
         }
     }
 

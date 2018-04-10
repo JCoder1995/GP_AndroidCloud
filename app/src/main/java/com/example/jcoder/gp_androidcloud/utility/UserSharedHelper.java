@@ -26,17 +26,23 @@ public class UserSharedHelper {
         Map<String, String> data = new HashMap<String, String>();
         SharedPreferences sp = mContext.getSharedPreferences("mysp", Context.MODE_PRIVATE);
         data.put("username", sp.getString("username", ""));
-        data.put("passwd", sp.getString("passwd", ""));
+        data.put("password", sp.getString("password", ""));
         return data;
     }
     //定义一个保存数据的方法
-    public void save(String username, String passwd) {
+    public void save(String username, String password) {
         SharedPreferences sp = mContext.getSharedPreferences("mysp", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sp.edit();
         editor.putString("username", username);
-        editor.putString("passwd", passwd);
+        editor.putString("password", password);
         editor.commit();
-        Toast.makeText(mContext, "信息已写入SharedPreference中", Toast.LENGTH_SHORT).show();
+        Toast.makeText(mContext, "用户信息已保存", Toast.LENGTH_SHORT).show();
     }
-
+    //清楚用户数据
+    public void delete(){
+        SharedPreferences sp = mContext.getSharedPreferences("mysp", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sp.edit();
+        editor.clear();
+        editor.commit();
+    }
 }

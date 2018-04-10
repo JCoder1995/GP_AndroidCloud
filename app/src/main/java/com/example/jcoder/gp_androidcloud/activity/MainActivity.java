@@ -32,7 +32,7 @@ import com.example.jcoder.gp_androidcloud.enity.FileList;
 import com.jph.takephoto.app.TakePhoto;
 import com.jph.takephoto.model.InvokeParam;
 import com.leon.lfilepickerlibrary.LFilePicker;
-import com.orhanobut.logger.Logger;
+
 
 import java.util.List;
 
@@ -332,7 +332,7 @@ public class MainActivity extends AppCompatActivity
         } else if (id == R.id.nav_share) {
 
         } else if (id == R.id.nav_send) {
-
+            finish();
         }
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);

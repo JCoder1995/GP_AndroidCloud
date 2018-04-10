@@ -1,6 +1,7 @@
 package com.example.jcoder.gp_androidcloud.Task;
 
 import android.os.AsyncTask;
+import android.util.Log;
 
 import com.example.jcoder.gp_androidcloud.bean.UserBean;
 import com.example.jcoder.gp_androidcloud.callbck.JsonCallback;
@@ -16,7 +17,7 @@ public class LoginTask extends AsyncTask<Void,Void,Boolean>{
     private final String mUsername;
     private final String mPassword;
     private LoginCallBack loginCallBack;
-
+    private int status ;
     public LoginTask(String mUsername, String mPassword) {
         this.mUsername = mUsername;
         this.mPassword = mPassword;
@@ -24,15 +25,32 @@ public class LoginTask extends AsyncTask<Void,Void,Boolean>{
 
     @Override
     protected Boolean doInBackground(Void... voids) {
-        final int[] status = new int[1];
+
         OkUtil.postLogin(mUsername, mPassword, new JsonCallback<UserBean>() {
             @Override
             public void onSuccess(Response<UserBean> response) {
-                status[0] = response.body().code;
+                status = response.body().code;
+                Log.e("response", String.valueOf(status));
             }
         });
-        if (status[0] ==0)return true;
-        else return  false;
+
+        if (status == -1){
+            Log.e("response_status","-1");
+            return false;
+
+        }
+
+        else if (status == 0){
+            Log.e("response_status","0");
+            return true;
+        }
+
+        else if (status == 1){
+            Log.e("response_status","1");
+            return false;
+        }
+
+        return null;
     }
 
     @Override
