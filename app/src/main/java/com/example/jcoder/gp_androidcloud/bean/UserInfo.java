@@ -10,6 +10,7 @@ public class UserInfo {
     public String userName;
     public String nickName;
     public String phone;
+    public String passWord;
 
     public UserInfo toUserInfo(){
         UserInfo userInfo = new UserInfo();
@@ -17,6 +18,7 @@ public class UserInfo {
         userInfo.userName=userName;
         userInfo.nickName=nickName;
         userInfo.phone=phone;
+        userInfo.passWord = passWord;
         return toUserInfo();
     }
 }

@@ -208,8 +208,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             loginTask.setLoginCallBack(new LoginTask.LoginCallBack() {
                 @Override
                 public void setBoolean(Boolean status) {
-
-                    Log.e("1212121212", String.valueOf(status));
+                    Log.e("LoginStatus", String.valueOf(status));
                     if (status){
                         //获取用户信息
                         Log.e("CallBack_Status", String.valueOf(status));
@@ -218,6 +217,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                         userSharedHelper.save(email,password);
                         Toast.makeText(LoginActivity.this,getString(R.string.connect_user_success),Toast.LENGTH_SHORT).show();
                         Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                        intent.putExtra("username",email);
                         startActivity(intent);
                         finish();
                     }

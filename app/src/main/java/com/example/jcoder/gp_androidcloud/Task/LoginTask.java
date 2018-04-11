@@ -17,7 +17,8 @@ public class LoginTask extends AsyncTask<Void,Void,Boolean>{
     private final String mUsername;
     private final String mPassword;
     private LoginCallBack loginCallBack;
-    private int status ;
+    private int status[] = new int[1] ;
+
     public LoginTask(String mUsername, String mPassword) {
         this.mUsername = mUsername;
         this.mPassword = mPassword;
@@ -29,25 +30,29 @@ public class LoginTask extends AsyncTask<Void,Void,Boolean>{
         OkUtil.postLogin(mUsername, mPassword, new JsonCallback<UserBean>() {
             @Override
             public void onSuccess(Response<UserBean> response) {
-                status = response.body().code;
-                Log.e("response", String.valueOf(status));
+                status[0] = response.body().code;
+                Log.e("response", String.valueOf(status[0]));
             }
         });
+        try {
+            Thread.sleep(2000);
 
-        if (status == -1){
-            Log.e("response_status","-1");
-            return false;
+            if ( status[0]== -1){
+                Log.e("response_status","-1");
+                return false;
+            }
 
-        }
+            else if (status[0] == 0){
+                Log.e("response_status","0");
+                return true;
+            }
 
-        else if (status == 0){
-            Log.e("response_status","0");
-            return true;
-        }
-
-        else if (status == 1){
-            Log.e("response_status","1");
-            return false;
+            else if (status[0] == 1){
+                Log.e("response_status","1");
+                return false;
+            }
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
 
         return null;
@@ -64,6 +69,7 @@ public class LoginTask extends AsyncTask<Void,Void,Boolean>{
     public void setLoginCallBack(LoginCallBack loginCallBack) {
         this.loginCallBack = loginCallBack;
     }
+
     public interface LoginCallBack {
         void setBoolean(Boolean status);
     }

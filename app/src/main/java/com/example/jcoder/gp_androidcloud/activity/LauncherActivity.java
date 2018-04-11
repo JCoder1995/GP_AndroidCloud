@@ -2,7 +2,6 @@ package com.example.jcoder.gp_androidcloud.activity;
 
 import android.content.Context;
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Handler;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -33,7 +32,7 @@ public class LauncherActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_launcher);
         hideToolbar();
-        getConnect();
+      //  getConnect();
         initActivity();
     }
 
@@ -53,7 +52,7 @@ public class LauncherActivity extends AppCompatActivity {
         Map<String, String> data = userSharedHelper.read();
         email = data.get("username");
         psw = data.get("password");
-        Log.e("errorinformation",email+psw);
+        Log.e("errorInformation",email+psw);
 
         //如果用户信息为空 则进入登陆界面
         if (email == ""||psw=="") {
@@ -70,12 +69,14 @@ public class LauncherActivity extends AppCompatActivity {
             loginTask.setLoginCallBack(new LoginTask.LoginCallBack() {
                 @Override
                 public void setBoolean(Boolean status) {
-                 if (status){
-                     Toast.makeText(LauncherActivity.this,getString(R.string.connect_user_success),Toast.LENGTH_SHORT).show();
-                     Intent intent = new Intent(LauncherActivity.this, MainActivity.class);
-                     startActivity(intent);
-                     finish();
-                 }
+                    Log.e("LauncherActivity",String.valueOf(status));
+                    if (status){
+                         Toast.makeText(LauncherActivity.this,getString(R.string.connect_user_success),Toast.LENGTH_SHORT).show();
+                         Intent intent = new Intent(LauncherActivity.this, MainActivity.class);
+                         intent.putExtra("username",email);
+                         startActivity(intent);
+                         finish();
+                    }
                  else {
                      userSharedHelper.delete();
                      Toast.makeText(LauncherActivity.this,getString(R.string.connect_user_error),Toast.LENGTH_SHORT).show();

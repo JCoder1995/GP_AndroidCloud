@@ -26,10 +26,11 @@ public class OkUtil {
      * @param <T>
      */
 
-  private static String ip ="http://192.168.179.64:8081";
-
-  private static String userLoginUrl = ip+"/user/login";
+    private static String ip ="http://192.168.179.64:8081";
+    private static String userLoginUrl = ip+"/user/login";
     private static String userRegisterUrl = ip+"/user/register";
+    private static String userInfo = ip+"/user/getUser";
+
 
     // 测试网络联通类
     public static void postRequest(JsonCallback<UserBean> callback) {
@@ -43,7 +44,7 @@ public class OkUtil {
         Log.d("OkGoUtil", "用户登陆");
         OkGo.<UserBean>post(userLoginUrl)
                 .params("username",userName)
-                .params("passowrd",passWord)
+                .params("password",passWord)
                 .execute(callback);
     }
     //用户注册
@@ -51,10 +52,16 @@ public class OkUtil {
         Log.d("OkGoUtil", "用户登陆");
         OkGo.<T>post(userRegisterUrl)
                 .params("username",userName)
-                .params("passowrd",passWord)
+                .params("password",passWord)
                 .params("nickName",nickName)
                 .params("phone",phone)
                 .execute(callback);
     }
-
+    //获取用户信息
+    public static <T> void postUser(String userName, JsonCallback<T> callback){
+        Log.d("OkGoUtil", "获取用户信息");
+        OkGo.<T>post(userInfo)
+                .params("username",userName)
+                .execute(callback);
+    }
 }

@@ -1,6 +1,7 @@
 package com.example.jcoder.gp_androidcloud.activity;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -15,6 +16,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -26,9 +28,12 @@ import android.widget.Toast;
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.listener.OnItemClickListener;
 import com.example.jcoder.gp_androidcloud.R;
+import com.example.jcoder.gp_androidcloud.Task.UserTask;
 import com.example.jcoder.gp_androidcloud.adapter.PullToRefreshFileListAdapter;
+import com.example.jcoder.gp_androidcloud.bean.UserInfo;
 import com.example.jcoder.gp_androidcloud.data.DataServer;
 import com.example.jcoder.gp_androidcloud.enity.FileList;
+import com.example.jcoder.gp_androidcloud.utility.UserSharedHelper;
 import com.jph.takephoto.app.TakePhoto;
 import com.jph.takephoto.model.InvokeParam;
 import com.leon.lfilepickerlibrary.LFilePicker;
@@ -38,7 +43,6 @@ import java.util.List;
 
 interface RequestCallBack {
     void success(List<FileList> data);
-
     void fail(Exception e);
 }
 
@@ -94,6 +98,8 @@ class Request extends Thread {
     }
 }
 
+
+
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
      //获取当前Activity名称
@@ -118,11 +124,28 @@ public class MainActivity extends AppCompatActivity
     private LinearLayout popLayout;
     private ImageView back;
 
+    //用户信息
+    private String mUsername; //用户名
+    private String nickName;  //真实姓名
+
+    //定义UserTask
+    private UserTask userTask;
+
+    //用户存储
+    private UserSharedHelper userSharedHelper;
+    private Context mContext;
+
+
+
     @SuppressLint("ResourceAsColor")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        //获取登陆用户
+        mUsername = getIntentUserInfo();
+        getUserInfo(mUsername);
         //设置Toolbar
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -337,6 +360,24 @@ public class MainActivity extends AppCompatActivity
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    public String getIntentUserInfo(){
+        Intent intent = getIntent();
+        return intent.getStringExtra("username");
+    }
+    public void getUserInfo(final String username){
+        userTask = new UserTask(username);
+        userTask.setUserInfoCallBack(new UserTask.UserCallBack() {
+            @Override
+            public void setUser(UserInfo userInfo) {
+                nickName= userInfo.nickName;
+                mContext = getApplicationContext();
+                userSharedHelper = new UserSharedHelper(mContext);
+                userSharedHelper.save(username,userInfo.passWord,userInfo.id,userInfo.phone,userInfo.nickName);
+            }
+        });
+        userTask.execute();
     }
 
 }
