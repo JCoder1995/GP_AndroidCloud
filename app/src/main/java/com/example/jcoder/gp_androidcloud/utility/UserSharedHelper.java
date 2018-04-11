@@ -44,9 +44,14 @@ public class UserSharedHelper {
         SharedPreferences.Editor editor = sp.edit();
         editor.clear();
         editor.commit();
+
+        SharedPreferences sp1 = mContext.getSharedPreferences("userinfo", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor1 = sp1.edit();
+        editor1.clear();
+        editor1.commit();
+
     }
     public void save(String username, String password,String id,String phone,String nickName ){
-        delete();
         SharedPreferences sp = mContext.getSharedPreferences("userinfo", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sp.edit();
         editor.putString("username", username);

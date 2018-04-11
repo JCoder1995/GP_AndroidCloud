@@ -37,7 +37,6 @@ import java.util.List;
 import com.example.jcoder.gp_androidcloud.R;
 import com.example.jcoder.gp_androidcloud.callbck.JsonCallback;
 import com.example.jcoder.gp_androidcloud.net.OkUtil;
-import com.lzy.okgo.OkGo;
 import com.lzy.okgo.model.Response;
 
 import static android.Manifest.permission.READ_CONTACTS;

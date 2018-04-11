@@ -4,8 +4,6 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -23,103 +21,29 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
-import com.chad.library.adapter.base.BaseQuickAdapter;
-import com.chad.library.adapter.base.listener.OnItemClickListener;
+
 import com.example.jcoder.gp_androidcloud.R;
 import com.example.jcoder.gp_androidcloud.Task.UserTask;
-import com.example.jcoder.gp_androidcloud.adapter.PullToRefreshFileListAdapter;
 import com.example.jcoder.gp_androidcloud.bean.UserInfo;
-import com.example.jcoder.gp_androidcloud.data.DataServer;
-import com.example.jcoder.gp_androidcloud.enity.FileList;
 import com.example.jcoder.gp_androidcloud.utility.UserSharedHelper;
-import com.jph.takephoto.app.TakePhoto;
-import com.jph.takephoto.model.InvokeParam;
-import com.leon.lfilepickerlibrary.LFilePicker;
-
-
-import java.util.List;
-
-interface RequestCallBack {
-    void success(List<FileList> data);
-    void fail(Exception e);
-}
-
-class Request extends Thread {
-    private static final int PAGE_SIZE = 10;
-    private int mPage;
-    private RequestCallBack mCallBack;
-    private Handler mHandler;
-
-    private static boolean mFirstPageNoMore;
-    private static boolean mFirstError = true;
-
-    public Request(int page, RequestCallBack callBack) {
-        mPage = page;
-        mCallBack = callBack;
-        mHandler = new Handler(Looper.getMainLooper());
-    }
-
-    @Override
-    public void run() {
-        try {Thread.sleep(500);} catch (InterruptedException e) {}
-
-        if (mPage == 2 && mFirstError) {
-            mFirstError = false;
-            mHandler.post(new Runnable() {
-                @Override
-                public void run() {
-                    mCallBack.fail(new RuntimeException("fail"));
-                }
-            });
-        } else {
-            int size = PAGE_SIZE;
-            if (mPage == 1) {
-                if (mFirstPageNoMore) {
-                    size = 1;
-                }
-                mFirstPageNoMore = !mFirstPageNoMore;
-                if (!mFirstError) {
-                    mFirstError = true;
-                }
-            } else if (mPage == 4) {
-                size = 1;
-            }
-
-            final int dataSize = size;
-            mHandler.post(new Runnable() {
-                @Override
-                public void run() {
-                    mCallBack.success(DataServer.getSampleData(dataSize));
-                }
-            });
-        }
-    }
-}
-
 
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
      //获取当前Activity名称
-     private static final String TAG = MainActivity.class.getName();
-     //获取TakePhoto
-     private TakePhoto takePhoto;
-     private InvokeParam invokeParam;
-     private Button uploadPhoto;
+    private static final String TAG = MainActivity.class.getName();
+    private Button uploadPhoto;
 
     // 再点一次退出程序时间设置
     private static final long WAIT_TIME = 2000L;
     private long TOUCH_TIME = 0;
 
-    // 定义当前页
-    private static final int PAGE_SIZE = 20;
     //定义文件模块
     private RecyclerView mRecyclerView;
     private SwipeRefreshLayout mSwipeRefreshLayout;
-    private PullToRefreshFileListAdapter mAdapter;
-    private int mNextRequestPage = 1;
 
     private LinearLayout popLayout;
     private ImageView back;
@@ -135,14 +59,19 @@ public class MainActivity extends AppCompatActivity
     private UserSharedHelper userSharedHelper;
     private Context mContext;
 
-
+    //用户信息更新
+    private ImageView userInfoImageView;
+    private TextView userInfoNickName;
+    private TextView userInfoUsername;
 
     @SuppressLint("ResourceAsColor")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
+        //获取SharedPreferences
+        mContext = getApplicationContext();
+        userSharedHelper = new UserSharedHelper(mContext);
         //获取登陆用户
         mUsername = getIntentUserInfo();
         getUserInfo(mUsername);
@@ -165,114 +94,17 @@ public class MainActivity extends AppCompatActivity
         //加载导航栏布局
         NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
-        //上传图片
-        uploadPhoto= findViewById(R.id.btnPickBySelect);
+
+        //获取NavigationView header中的控件
+        setNavHead(navigationView);
 
         //文件查看
         mRecyclerView=(RecyclerView)findViewById(R.id.main_recycler);
-        mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipeLayout);
-        mSwipeRefreshLayout.setColorSchemeColors(R.color.colorPrimaryDark);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         setTitle("我的网盘");
 
-        initAdapter();
-        initRefreshLayout();
-        mSwipeRefreshLayout.setRefreshing(true);
-        refresh();
     }
 
-    private void initAdapter() {
-        mAdapter = new PullToRefreshFileListAdapter();
-        mAdapter.setOnLoadMoreListener(new BaseQuickAdapter.RequestLoadMoreListener() {
-            @Override
-            public void onLoadMoreRequested() {
-                loadMore();
-            }
-        });
-        mAdapter.openLoadAnimation(BaseQuickAdapter.SLIDEIN_BOTTOM );
-
-        mRecyclerView.setAdapter(mAdapter);
-
-        mRecyclerView.addOnItemTouchListener(new OnItemClickListener() {
-            @Override
-            public void onSimpleItemClick(final BaseQuickAdapter adapter, final View view, final int position) {
-                Toast.makeText(MainActivity.this, Integer.toString(position), Toast.LENGTH_LONG).show();
-            }
-
-            @Override
-            public void onItemChildClick(BaseQuickAdapter adapter, View view, int position) {
-                Toast.makeText(MainActivity.this, "CheckBox"+Integer.toString(position), Toast.LENGTH_LONG).show();
-                popLayout.setVisibility(View.VISIBLE);
-            }
-
-        });
-
-    }
-
-    private void initRefreshLayout() {
-        mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                refresh();
-            }
-        });
-    }
-
-    private void refresh() {
-        mNextRequestPage = 1;
-        mAdapter.setEnableLoadMore(false);//这里的作用是防止下拉刷新的时候还可以上拉加载
-        new Request(mNextRequestPage, new RequestCallBack() {
-            @Override
-            public void success(List<FileList> data) {
-                setData(true, data);
-                mAdapter.setEnableLoadMore(true);
-                mSwipeRefreshLayout.setRefreshing(false);
-            }
-
-            @Override
-            public void fail(Exception e) {
-                Toast.makeText(MainActivity.this, "网络错误", Toast.LENGTH_LONG).show();
-                mAdapter.setEnableLoadMore(true);
-                mSwipeRefreshLayout.setRefreshing(false);
-            }
-        }).start();
-    }
-
-    private void loadMore() {
-        new Request(mNextRequestPage, new RequestCallBack() {
-            @Override
-            public void success(List<FileList> data) {
-                setData(false, data);
-            }
-
-            @Override
-            public void fail(Exception e) {
-                mAdapter.loadMoreFail();
-                Toast.makeText(MainActivity.this,"TestTest", Toast.LENGTH_LONG).show();
-            }
-        }).start();
-    }
-
-    private void setData(boolean isRefresh, List data) {
-        mNextRequestPage++;
-        final int size = data == null ? 0 : data.size();
-        if (isRefresh) {
-            mAdapter.setNewData(data);
-        } else {
-            if (size > 0) {
-                mAdapter.addData(data);
-            }
-        }
-        if (size < PAGE_SIZE) {
-            //第一页如果不够一页就不显示没有更多数据布局
-            mAdapter.loadMoreEnd(isRefresh);
-            Toast.makeText(this, "没有更多了", Toast.LENGTH_SHORT).show();
-        } else {
-            mAdapter.loadMoreComplete();
-        }
-    }
-
-    //获取TakePhoto实例
     @Override
     public void onSaveInstanceState(Bundle outPersistentState) {
         super.onSaveInstanceState(outPersistentState);
@@ -311,24 +143,7 @@ public class MainActivity extends AppCompatActivity
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
-
-        //Menu选择
-         /*
-        if (id == R.id  .action_settings) {
-            return true;
-        }
-       */
-
          if(id == R.id.upload_file){
-             int REQUESTCODE_FROM_ACTIVITY = 1000;
-             new LFilePicker()
-                     .withActivity(MainActivity.this)
-                     .withRequestCode(REQUESTCODE_FROM_ACTIVITY)
-                     .withStartPath("/storage/emulated/0/Download")//指定初始显示路径
-                     .withIsGreater(false)//过滤文件大小 小于指定大小的文件
-                     .withFileSize(500 * 1024)//指定文件大小为500K
-                     .start();
          }
          else if (id == R.id.menu_upload_file){
              //模拟按钮点击
@@ -337,6 +152,7 @@ public class MainActivity extends AppCompatActivity
         return super.onOptionsItemSelected(item);
     }
 
+    //对于左侧导航栏进行
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
@@ -355,6 +171,7 @@ public class MainActivity extends AppCompatActivity
         } else if (id == R.id.nav_share) {
 
         } else if (id == R.id.nav_send) {
+        //    userSharedHelper.delete();
             finish();
         }
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
@@ -362,22 +179,36 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
+    //获取登陆用户名
     public String getIntentUserInfo(){
         Intent intent = getIntent();
         return intent.getStringExtra("username");
     }
+
+    //获取用户信息 并存储到SharedPreferences
     public void getUserInfo(final String username){
         userTask = new UserTask(username);
         userTask.setUserInfoCallBack(new UserTask.UserCallBack() {
             @Override
             public void setUser(UserInfo userInfo) {
                 nickName= userInfo.nickName;
-                mContext = getApplicationContext();
-                userSharedHelper = new UserSharedHelper(mContext);
+                userInfoNickName.setText(nickName);
+                userInfoUsername.setText(userInfo.userName);
+                Log.e("nickName",nickName);
+
                 userSharedHelper.save(username,userInfo.passWord,userInfo.id,userInfo.phone,userInfo.nickName);
             }
         });
         userTask.execute();
+    }
+
+    //设置用户名 真实姓名
+    public void setNavHead(NavigationView navigationView){
+        View headerView = navigationView.inflateHeaderView(R.layout.nav_header_main);
+        //加载 用户头像 用户姓名 用户登录名
+        userInfoImageView = headerView.findViewById(R.id.userInfoImageView);
+        userInfoNickName = headerView.findViewById(R.id.userInfoNickName);
+        userInfoUsername = headerView.findViewById(R.id.userInfoUsername);
     }
 
 }
