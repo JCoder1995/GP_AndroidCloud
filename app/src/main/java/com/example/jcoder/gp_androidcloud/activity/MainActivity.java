@@ -30,6 +30,13 @@ import com.example.jcoder.gp_androidcloud.Task.UserTask;
 import com.example.jcoder.gp_androidcloud.bean.UserInfo;
 import com.example.jcoder.gp_androidcloud.utility.UserSharedHelper;
 
+import java.util.ArrayList;
+
+import droidninja.filepicker.FilePickerBuilder;
+import droidninja.filepicker.FilePickerConst;
+import droidninja.filepicker.utils.Orientation;
+import pub.devrel.easypermissions.EasyPermissions;
+
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -43,7 +50,6 @@ public class MainActivity extends AppCompatActivity
 
     //定义文件模块
     private RecyclerView mRecyclerView;
-    private SwipeRefreshLayout mSwipeRefreshLayout;
 
     private LinearLayout popLayout;
     private ImageView back;
@@ -63,6 +69,16 @@ public class MainActivity extends AppCompatActivity
     private ImageView userInfoImageView;
     private TextView userInfoNickName;
     private TextView userInfoUsername;
+    //
+    public static final int RC_PHOTO_PICKER_PERM = 123;
+
+    //文件最大数量
+    private int MAX_ATTACHMENT_COUNT = 10;
+    private static final int CUSTOM_REQUEST_CODE = 532;
+
+    private ArrayList<String> photoPaths = new ArrayList<>();
+    private ArrayList<String> docPaths = new ArrayList<>();
+
 
     @SuppressLint("ResourceAsColor")
     @Override
@@ -143,7 +159,12 @@ public class MainActivity extends AppCompatActivity
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-         if(id == R.id.upload_file){
+         if (id == R.id.upload_file){
+
+         }
+         if (id ==R.id.menu_upload_file) {
+             pickPhotoClicked();
+
          }
          else if (id == R.id.menu_upload_file){
              //模拟按钮点击
@@ -209,6 +230,45 @@ public class MainActivity extends AppCompatActivity
         userInfoImageView = headerView.findViewById(R.id.userInfoImageView);
         userInfoNickName = headerView.findViewById(R.id.userInfoNickName);
         userInfoUsername = headerView.findViewById(R.id.userInfoUsername);
+    }
+
+    //用户选择图片上传
+    public void pickPhotoClicked() {
+        if (EasyPermissions.hasPermissions(this, FilePickerConst.PERMISSIONS_FILE_PICKER)) {
+            onPickPhoto();
+        } else {
+            // Ask for one permission
+            EasyPermissions.requestPermissions(this, getString(R.string.rationale_photo_picker),
+                    RC_PHOTO_PICKER_PERM, FilePickerConst.PERMISSIONS_FILE_PICKER);
+        }
+    }
+
+    public void onPickPhoto() {
+        int maxCount = MAX_ATTACHMENT_COUNT - docPaths.size();
+        if ((docPaths.size() + photoPaths.size()) == MAX_ATTACHMENT_COUNT) {
+            Toast.makeText(this, "Cannot select more than " + MAX_ATTACHMENT_COUNT + " items",
+                    Toast.LENGTH_SHORT).show();
+        } else {
+/*            FilePickerBuilder.getInstance()
+                    .setMaxCount(maxCount)
+                    .setSelectedFiles(photoPaths)
+                    .setActivityTheme(R.style.AppTheme)
+                    .setActivityTitle("Please select media")
+                    .enableVideoPicker(false)
+                    .enableCameraSupport(true)
+                    .showGifs(false)
+                    .showFolderView(false)
+                    .enableSelectAll(true)
+                    .enableImagePicker(true)
+                    .setCameraPlaceholder(R.drawable.custom_camera)
+                    .withOrientation(Orientation.UNSPECIFIED)
+                    .pickPhoto(this, CUSTOM_REQUEST_CODE);*/
+
+            FilePickerBuilder.getInstance().setMaxCount(5)
+                    .setSelectedFiles(photoPaths)
+                    .setActivityTheme(R.style.LibAppTheme)
+                    .pickPhoto(this);
+        }
     }
 
 }

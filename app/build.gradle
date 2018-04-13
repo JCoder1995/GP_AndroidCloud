@@ -1,11 +1,11 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 26
+    compileSdkVersion 27
     defaultConfig {
         applicationId "com.example.jcoder.gp_androidcloud"
         minSdkVersion 16
-        targetSdkVersion 26
+        targetSdkVersion 27
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
@@ -21,22 +21,33 @@ android {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation 'com.android.support:appcompat-v7:26.1.0'
+    implementation 'com.android.support:appcompat-v7:27.1.0'
+
     implementation 'com.android.support.constraint:constraint-layout:1.0.2'
-    implementation 'com.android.support:support-v4:26.1.0'
-    implementation 'com.android.support:design:26.1.0'
+    implementation 'com.android.support:support-v4:27.1.0'
+    implementation 'com.android.support:design:27.1.0'
     implementation 'com.google.android.gms:play-services-ads:11.8.0'
-    implementation 'com.android.support:support-vector-drawable:26.1.0'
+    implementation 'com.android.support:support-vector-drawable:27.1.0'
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.1'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
-    implementation 'com.android.support:mediarouter-v7:26.1.0'
+    implementation 'com.android.support:mediarouter-v7:27.1.0'
 
     //引用 Gson
     implementation 'com.google.code.gson:gson:2.8.2'
     //网络上传框架
-    compile 'com.lzy.net:okgo:3.0.4'
-    compile 'com.readystatesoftware.chuck:library:1.0.4'
+    implementation 'com.lzy.net:okgo:3.0.4'
+    implementation 'com.readystatesoftware.chuck:library:1.0.4'
+
+    //文件选择上传
+    compile 'com.droidninja:filepicker:2.1.4'
+    //原框架有一点问题 Glide 没有导入
+ //   implementation 'com.nineoldandroids:library:2.4.0'
+//   compile 'com.github.bumptech.glide:glide:3.7.0'
+
+    //权限获取
+    implementation 'pub.devrel:easypermissions:1.2.0'
+
 
 
 }

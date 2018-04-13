@@ -113,6 +113,7 @@
     <string name="connect_Success">网络连接正常</string>
     <string name="connect_user_error">用户身份已过期,请重新登陆</string>
     <string name="connect_user_success">登陆成功</string>
+    <string name="rationale_photo_picker">我们需要获取读取您照片和摄像头的权限</string>
 
 
 </resources>
