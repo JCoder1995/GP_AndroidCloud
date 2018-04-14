@@ -42,8 +42,8 @@ dependencies {
     //文件选择上传
     compile 'com.droidninja:filepicker:2.1.4'
     //原框架有一点问题 Glide 没有导入
- //   implementation 'com.nineoldandroids:library:2.4.0'
-//   compile 'com.github.bumptech.glide:glide:3.7.0'
+    compile 'com.nineoldandroids:library:2.4.0'
+    compile 'com.github.bumptech.glide:glide:4.6.1'
 
     //权限获取
     implementation 'pub.devrel:easypermissions:1.2.0'

@@ -46,6 +46,8 @@ import com.google.gson.Gson;
 import com.lzy.okgo.OkGo;
 import com.lzy.okgo.model.Response;
 
+import droidninja.filepicker.FilePickerConst;
+
 import static android.Manifest.permission.READ_CONTACTS;
 
 /**
@@ -332,5 +334,6 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         int ADDRESS = 0;
         int IS_PRIMARY = 1;
     }
+
 }
 

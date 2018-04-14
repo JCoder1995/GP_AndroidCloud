@@ -34,6 +34,7 @@ import java.util.ArrayList;
 
 import droidninja.filepicker.FilePickerBuilder;
 import droidninja.filepicker.FilePickerConst;
+import droidninja.filepicker.models.sort.SortingTypes;
 import droidninja.filepicker.utils.Orientation;
 import pub.devrel.easypermissions.EasyPermissions;
 
@@ -159,17 +160,19 @@ public class MainActivity extends AppCompatActivity
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-         if (id == R.id.upload_file){
+         if (id ==R.id.menu_upload_folder) {
 
          }
-         if (id ==R.id.menu_upload_file) {
+         else if (id == R.id.menu_upload_video){
+
+         }
+         else if (id == R.id.menu_upload_photo){
              pickPhotoClicked();
+         }
+         else if (id == R.id.menu_upload_doc){
+             pickDocClicked();
+         }
 
-         }
-         else if (id == R.id.menu_upload_file){
-             //模拟按钮点击
-             uploadPhoto.performClick();
-         }
         return super.onOptionsItemSelected(item);
     }
 
@@ -243,31 +246,64 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
+    //用户选择文档上传
+    public void pickDocClicked() {
+        if (EasyPermissions.hasPermissions(this, FilePickerConst.PERMISSIONS_FILE_PICKER)) {
+            onPickDoc();
+        } else {
+            // Ask for one permission
+            EasyPermissions.requestPermissions(this, getString(R.string.rationale_photo_picker),
+                    RC_PHOTO_PICKER_PERM, FilePickerConst.PERMISSIONS_FILE_PICKER);
+        }
+    }
+
+
     public void onPickPhoto() {
         int maxCount = MAX_ATTACHMENT_COUNT - docPaths.size();
         if ((docPaths.size() + photoPaths.size()) == MAX_ATTACHMENT_COUNT) {
             Toast.makeText(this, "Cannot select more than " + MAX_ATTACHMENT_COUNT + " items",
                     Toast.LENGTH_SHORT).show();
         } else {
-/*            FilePickerBuilder.getInstance()
+            FilePickerBuilder.getInstance()
                     .setMaxCount(maxCount)
                     .setSelectedFiles(photoPaths)
-                    .setActivityTheme(R.style.AppTheme)
-                    .setActivityTitle("Please select media")
+                    .setActivityTheme(R.style.LibAppTheme)
                     .enableVideoPicker(false)
-                    .enableCameraSupport(true)
-                    .showGifs(false)
-                    .showFolderView(false)
                     .enableSelectAll(true)
+                    .setActivityTitle("全部图片")
                     .enableImagePicker(true)
                     .setCameraPlaceholder(R.drawable.custom_camera)
                     .withOrientation(Orientation.UNSPECIFIED)
-                    .pickPhoto(this, CUSTOM_REQUEST_CODE);*/
+                    .pickPhoto(this,CUSTOM_REQUEST_CODE);
+        }
+    }
 
-            FilePickerBuilder.getInstance().setMaxCount(5)
-                    .setSelectedFiles(photoPaths)
+    public void onPickDoc() {
+        String[] zips   = { ".zip", ".rar" };
+        String[] pdfs   = { ".pdf" };
+        String[] docs   = {".doc",".docx","txt"};
+        String[] excels = {".xls",".xlsx"};
+        String[] ppts   = {".ppt","pptx"};
+
+        int maxCount = MAX_ATTACHMENT_COUNT - photoPaths.size();
+        if ((docPaths.size() + photoPaths.size()) == MAX_ATTACHMENT_COUNT) {
+            Toast.makeText(this, "Cannot select more than " + MAX_ATTACHMENT_COUNT + " items",
+                    Toast.LENGTH_SHORT).show();
+        } else {
+            FilePickerBuilder.getInstance()
+                    .setMaxCount(1)
+                    .setSelectedFiles(docPaths)
                     .setActivityTheme(R.style.LibAppTheme)
-                    .pickPhoto(this);
+                    .setActivityTitle("Please select doc")
+                    .addFileSupport("Zip", zips,R.drawable.zip_box)
+                    .addFileSupport("Pdf", pdfs, R.drawable.file_pdf_box)
+                    .addFileSupport("Doc",docs,R.drawable.file_document_box)
+                    .addFileSupport("Excel",excels,R.drawable.file_excel_box)
+                    .addFileSupport("PPT",ppts,R.drawable.prescription)
+                    .enableDocSupport(false)
+                    .sortDocumentsBy(SortingTypes.name)
+                    .withOrientation(Orientation.UNSPECIFIED)
+                    .pickFile(this);
         }
     }
 

@@ -37,19 +37,22 @@
         app:showAsAction="always">
 
         <menu>
-            <item android:title="新建笔记"
-                app:showAsAction="ifRoom" />
 
             <item android:title="新建文件夹"
+                android:id="@+id/menu_upload_folder"
                 app:showAsAction="ifRoom" />
 
             <item android:title="上传图片"
-                android:id="@+id/menu_upload_file"
+                android:id="@+id/menu_upload_photo"
                 app:showAsAction="ifRoom" />
 
-            <item android:title="上传文件"
-                android:id="@+id/upload_file"
+            <item android:title="上传文档"
+                android:id="@+id/menu_upload_doc"
                 app:showAsAction="ifRoom" />
+            <item android:title="上传音视频"
+                android:id="@+id/menu_upload_video"
+                app:showAsAction="ifRoom" />
+
         </menu>
     </item>
 
