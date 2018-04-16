@@ -3,6 +3,7 @@ package com.example.jcoder.gp_androidcloud.net;
 
 import android.util.Log;
 
+import com.example.jcoder.gp_androidcloud.bean.FileList;
 import com.example.jcoder.gp_androidcloud.bean.UserBean;
 import com.example.jcoder.gp_androidcloud.callbck.JsonCallback;
 import com.lzy.okgo.OkGo;
@@ -26,11 +27,12 @@ public class OkUtil {
      * @param <T>
      */
 
-    private static String ip ="http://192.168.179.64:8081";
+    private static String ip ="http://10.117.129.170:8081";
     private static String userLoginUrl = ip+"/user/login";
     private static String userRegisterUrl = ip+"/user/register";
     private static String userInfo = ip+"/user/getUser";
 
+    private static String getFileList = ip+"/file/getFileList";
 
     // 测试网络联通类
     public static void postRequest(JsonCallback<UserBean> callback) {
@@ -64,4 +66,15 @@ public class OkUtil {
                 .params("username",userName)
                 .execute(callback);
     }
+
+    //获取用户信息
+    public static <T> void postFileList(String userName,String fileParent, JsonCallback<T> callback){
+        Log.d("OkGoUtil", "获取用户文件");
+        OkGo.<T>post(getFileList)
+                .params("uid",userName)
+                .params("fid",fileParent)
+                .execute(callback);
+    }
+
+
 }

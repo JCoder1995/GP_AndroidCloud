@@ -3,7 +3,9 @@ package com.example.jcoder.gp_androidcloud.adapter;
 
 import android.support.annotation.Nullable;
 import android.view.View;
+import android.widget.ImageView;
 
+import com.bumptech.glide.Glide;
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
 import com.example.jcoder.gp_androidcloud.R;
@@ -19,13 +21,23 @@ public class FileAdapter extends BaseQuickAdapter<FileList,BaseViewHolder> imple
 
 
     public FileAdapter(int layoutResId, @Nullable List<FileList> data) {
-        super(layoutResId, data);
+        super(R.layout.file_list_main, data);
     }
 
     @Override
     protected void convert(BaseViewHolder helper, FileList item) {
-        helper.setText(R.id.text, item.getFileName());
-
+        helper.addOnClickListener(R.id.file_iv);
+        switch (item.getFileType()){
+            case 0:
+                helper.setImageResource(R.id.file_iv,R.drawable.icon_file_unknown);
+                helper.setText(R.id.file_type_tv,"文件夹");
+                break;
+            case 1:
+                Glide.with(mContext).load(item.getFilePath()).into((ImageView) helper.getView(R.id.file_iv));
+                helper.setText(R.id.file_type_tv,"");
+        }
+        helper.setText(R.id.file_name_tv,item.getFileName());
+        helper.setText(R.id.file_time,item.getFileUpdateTime());
     }
 
     @Override

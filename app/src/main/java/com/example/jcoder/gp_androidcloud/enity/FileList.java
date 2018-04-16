@@ -10,7 +10,25 @@ public class FileList {
     private String fileName;
     private String fileCreateTime;
     private String fileUpdateTime;
-    private String fileNowNumber;
+    private int fileType;
+
+    public String getFilePath() {
+        return filePath;
+    }
+
+    public void setFilePath(String filePath) {
+        this.filePath = filePath;
+    }
+
+    private String filePath;
+
+    public int getFileType() {
+        return fileType;
+    }
+
+    public void setFileType(int fileType) {
+        this.fileType = fileType;
+    }
 
     public int getFileId() {
         return fileId;
@@ -50,14 +68,6 @@ public class FileList {
 
     public void setFileUpdateTime(String fileUpdateTime) {
         this.fileUpdateTime = fileUpdateTime;
-    }
-
-    public String getFileNowNumber() {
-        return fileNowNumber;
-    }
-
-    public void setFileNowNumber(String fileNowNumber) {
-        this.fileNowNumber = fileNowNumber;
     }
 
 }

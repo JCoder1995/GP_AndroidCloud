@@ -15,6 +15,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.util.LongSparseArray;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -27,10 +28,26 @@ import android.widget.Toast;
 
 import com.example.jcoder.gp_androidcloud.R;
 import com.example.jcoder.gp_androidcloud.Task.UserTask;
+import com.example.jcoder.gp_androidcloud.adapter.FileAdapter;
+import com.example.jcoder.gp_androidcloud.bean.FileList;
 import com.example.jcoder.gp_androidcloud.bean.UserInfo;
+import com.example.jcoder.gp_androidcloud.callbck.JsonCallback;
+import com.example.jcoder.gp_androidcloud.net.OkUtil;
 import com.example.jcoder.gp_androidcloud.utility.UserSharedHelper;
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import com.google.gson.reflect.TypeToken;
+import com.lzy.okgo.model.Response;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.List;
 
 import droidninja.filepicker.FilePickerBuilder;
 import droidninja.filepicker.FilePickerConst;
@@ -49,15 +66,14 @@ public class MainActivity extends AppCompatActivity
     private static final long WAIT_TIME = 2000L;
     private long TOUCH_TIME = 0;
 
-    //定义文件模块
-    private RecyclerView mRecyclerView;
-
     private LinearLayout popLayout;
     private ImageView back;
 
     //用户信息
     private String mUsername; //用户名
     private String nickName;  //真实姓名
+    private String uid;  //用户uid
+
 
     //定义UserTask
     private UserTask userTask;
@@ -79,6 +95,10 @@ public class MainActivity extends AppCompatActivity
 
     private ArrayList<String> photoPaths = new ArrayList<>();
     private ArrayList<String> docPaths = new ArrayList<>();
+
+    //定义RecyclerView
+    private RecyclerView mRecyclerView;
+    private FileAdapter adapter;
 
 
     @SuppressLint("ResourceAsColor")
@@ -115,11 +135,9 @@ public class MainActivity extends AppCompatActivity
         //获取NavigationView header中的控件
         setNavHead(navigationView);
 
-        //文件查看
-        mRecyclerView=(RecyclerView)findViewById(R.id.main_recycler);
-        mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        //初始化RecyclerView
+        initRecyclerView();
         setTitle("我的网盘");
-
     }
 
     @Override
@@ -160,18 +178,18 @@ public class MainActivity extends AppCompatActivity
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-         if (id ==R.id.menu_upload_folder) {
+/*         if (id ==R.id.menu_upload_file) {
 
-         }
-         else if (id == R.id.menu_upload_video){
+         }*/
+ /*        else if (id == R.id.menu_upload_video){
 
          }
          else if (id == R.id.menu_upload_photo){
              pickPhotoClicked();
          }
-         else if (id == R.id.menu_upload_doc){
+         else if (id == R.id.menu_upload_video){
              pickDocClicked();
-         }
+         }*/
 
         return super.onOptionsItemSelected(item);
     }
@@ -216,8 +234,11 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void setUser(UserInfo userInfo) {
                 nickName= userInfo.nickName;
+
                 userInfoNickName.setText(nickName);
                 userInfoUsername.setText(userInfo.userName);
+                initFileListView("3","0");
+
                 Log.e("nickName",nickName);
 
                 userSharedHelper.save(username,userInfo.passWord,userInfo.id,userInfo.phone,userInfo.nickName);
@@ -307,4 +328,17 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
+    public void initRecyclerView(){
+        mRecyclerView = (RecyclerView)findViewById(R.id.main_recycler);
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+    }
+    public void  initFileListView(String uid, String parent){
+        OkUtil.postFileList(uid, parent, new JsonCallback<JsonArray>() {
+            @Override
+            public void onSuccess(Response<JsonArray> response) {
+                Log.e("sadadasdas",response.body().toString());
+
+            }
+        });
+    }
 }
