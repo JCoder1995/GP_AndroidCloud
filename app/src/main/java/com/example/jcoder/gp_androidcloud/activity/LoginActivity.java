@@ -38,15 +38,7 @@ import java.util.List;
 
 import com.example.jcoder.gp_androidcloud.R;
 import com.example.jcoder.gp_androidcloud.Task.LoginTask;
-import com.example.jcoder.gp_androidcloud.bean.UserBean;
-import com.example.jcoder.gp_androidcloud.callbck.JsonCallback;
-import com.example.jcoder.gp_androidcloud.net.OkUtil;
 import com.example.jcoder.gp_androidcloud.utility.UserSharedHelper;
-import com.google.gson.Gson;
-import com.lzy.okgo.OkGo;
-import com.lzy.okgo.model.Response;
-
-import droidninja.filepicker.FilePickerConst;
 
 import static android.Manifest.permission.READ_CONTACTS;
 

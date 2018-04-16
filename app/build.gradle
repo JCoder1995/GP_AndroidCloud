@@ -22,7 +22,6 @@ android {
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation 'com.android.support:appcompat-v7:27.1.0'
-
     implementation 'com.android.support.constraint:constraint-layout:1.0.2'
     implementation 'com.android.support:support-v4:27.1.0'
     implementation 'com.android.support:design:27.1.0'
@@ -35,19 +34,22 @@ dependencies {
 
     //引用 Gson
     implementation 'com.google.code.gson:gson:2.8.2'
-    //网络上传框架
+    //网络框架
     implementation 'com.lzy.net:okgo:3.0.4'
     implementation 'com.readystatesoftware.chuck:library:1.0.4'
 
     //文件选择上传
     compile 'com.droidninja:filepicker:2.1.4'
     //原框架有一点问题 Glide 没有导入
-    compile 'com.nineoldandroids:library:2.4.0'
-    compile 'com.github.bumptech.glide:glide:4.6.1'
+    implementation 'com.nineoldandroids:library:2.4.0'
+    implementation 'com.github.bumptech.glide:glide:4.6.1'
 
     //权限获取
     implementation 'pub.devrel:easypermissions:1.2.0'
 
+    //RecyclerView 插件
+    implementation 'com.github.CymChad:BaseRecyclerViewAdapterHelper:2.9.30'
+    implementation 'com.orhanobut:logger:2.1.1'
 
 
 }

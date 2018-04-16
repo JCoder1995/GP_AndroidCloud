@@ -270,7 +270,7 @@ public class MainActivity extends AppCompatActivity
                     .setActivityTheme(R.style.LibAppTheme)
                     .enableVideoPicker(false)
                     .enableSelectAll(true)
-                    .setActivityTitle("全部图片")
+                    .setActivityTitle("选择图片")
                     .enableImagePicker(true)
                     .setCameraPlaceholder(R.drawable.custom_camera)
                     .withOrientation(Orientation.UNSPECIFIED)
@@ -281,9 +281,9 @@ public class MainActivity extends AppCompatActivity
     public void onPickDoc() {
         String[] zips   = { ".zip", ".rar" };
         String[] pdfs   = { ".pdf" };
-        String[] docs   = {".doc",".docx","txt"};
-        String[] excels = {".xls",".xlsx"};
-        String[] ppts   = {".ppt","pptx"};
+        String[] docs   = { ".doc", ".docx", ".dot", ".dotx" };
+        String[] excels = { ".xls",".xlsx"};
+        String[] ppts   = { ".ppt",".pptx"};
 
         int maxCount = MAX_ATTACHMENT_COUNT - photoPaths.size();
         if ((docPaths.size() + photoPaths.size()) == MAX_ATTACHMENT_COUNT) {
@@ -291,15 +291,15 @@ public class MainActivity extends AppCompatActivity
                     Toast.LENGTH_SHORT).show();
         } else {
             FilePickerBuilder.getInstance()
-                    .setMaxCount(1)
+                    .setMaxCount(10)
                     .setSelectedFiles(docPaths)
                     .setActivityTheme(R.style.LibAppTheme)
-                    .setActivityTitle("Please select doc")
-                    .addFileSupport("Zip", zips,R.drawable.zip_box)
-                    .addFileSupport("Pdf", pdfs, R.drawable.file_pdf_box)
-                    .addFileSupport("Doc",docs,R.drawable.file_document_box)
-                    .addFileSupport("Excel",excels,R.drawable.file_excel_box)
-                    .addFileSupport("PPT",ppts,R.drawable.prescription)
+                    .setActivityTitle("选择文件")
+                    .addFileSupport("ZIP", zips)
+                    .addFileSupport("PDF", pdfs)
+                    .addFileSupport("DOC",docs)
+                    .addFileSupport("XLS",excels)
+                    .addFileSupport("PPT",ppts)
                     .enableDocSupport(false)
                     .sortDocumentsBy(SortingTypes.name)
                     .withOrientation(Orientation.UNSPECIFIED)
