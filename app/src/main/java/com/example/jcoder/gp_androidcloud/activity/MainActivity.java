@@ -27,13 +27,21 @@ import android.widget.Toast;
 import com.example.jcoder.gp_androidcloud.R;
 import com.example.jcoder.gp_androidcloud.Task.UserTask;
 import com.example.jcoder.gp_androidcloud.adapter.FileAdapter;
+import com.example.jcoder.gp_androidcloud.bean.FileList;
 import com.example.jcoder.gp_androidcloud.bean.UserInfo;
 import com.example.jcoder.gp_androidcloud.callbck.JsonCallback;
 import com.example.jcoder.gp_androidcloud.net.OkUtil;
 import com.example.jcoder.gp_androidcloud.utility.UserSharedHelper;
 
+import com.google.gson.Gson;
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.lzy.okgo.model.Response;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 
@@ -219,14 +227,12 @@ public class MainActivity extends AppCompatActivity
         userTask.setUserInfoCallBack(new UserTask.UserCallBack() {
             @Override
             public void setUser(UserInfo userInfo) {
-                nickName= userInfo.nickName;
 
+                nickName= userInfo.nickName;
                 userInfoNickName.setText(nickName);
                 userInfoUsername.setText(userInfo.userName);
-                initFileListView("3","0");
 
-                Log.e("nickName",nickName);
-
+                initFileListView(userInfo.id,"0");
                 userSharedHelper.save(username,userInfo.passWord,userInfo.id,userInfo.phone,userInfo.nickName);
             }
         });
@@ -317,14 +323,53 @@ public class MainActivity extends AppCompatActivity
     public void initRecyclerView(){
         mRecyclerView = (RecyclerView)findViewById(R.id.main_recycler);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+
     }
     public void  initFileListView(String uid, String parent){
-        OkUtil.postFileList(uid, parent, new JsonCallback<JsonArray>() {
+        OkUtil.postFileList(uid, parent, new JsonCallback<String>() {
             @Override
-            public void onSuccess(Response<JsonArray> response) {
-                Log.e("sadadasdas",response.body().toString());
-
+            public void onSuccess(Response<String> response) {
+                JsonArray filesList = analysisJson(response);
+                getFilesList(filesList);
+                FileAdapter fileAdapter = new FileAdapter(R.layout.file_list_main,getFilesList(filesList));
+                mRecyclerView.setAdapter(fileAdapter);
             }
         });
     }
+    public JsonArray analysisJson(Response<String> response){
+        JsonArray jsonArray1 = new JsonArray();
+        if (response!=null){
+            //Json的解析类对象
+            JsonParser parser = new JsonParser();
+            //将JSON的String 转成一个JsonArray对象
+            JsonArray jsonArray = parser.parse(response.body().toString()).getAsJsonArray();
+            for (int i = 0; i<jsonArray.size();i++){
+                JsonObject jsonObject = (JsonObject) jsonArray.get(i);
+                JsonObject jsonObject1 = (JsonObject) jsonObject.get("attrs");
+                jsonArray1.add(jsonObject1);
+            }
+            Log.e("jsonArray1",jsonArray1.toString());
+        }
+        return jsonArray1;
+    }
+
+    public ArrayList<FileList> getFilesList(JsonArray jsonElements) {
+
+        //Json的解析类对象
+        JsonParser parser = new JsonParser();
+        //将JSON的String 转成一个JsonArray对象
+        JsonArray jsonArray = parser.parse(jsonElements.toString()).getAsJsonArray();
+
+        Gson gson = new Gson();
+        ArrayList<FileList> filesBeanList = new ArrayList<>();
+
+        //加强for循环遍历JsonArray
+        for (JsonElement file : jsonArray) {
+            //使用GSON，直接转成Bean对象
+            FileList fileList = gson.fromJson(file, FileList.class);
+            filesBeanList.add(fileList);
+        }
+        return  filesBeanList;
+    }
+
 }
