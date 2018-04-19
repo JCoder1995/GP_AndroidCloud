@@ -10,6 +10,6 @@ public class FileList {
     public int filetype;
     public Date s_ctime;
     public String name;
-
+    public String size;
 
 }

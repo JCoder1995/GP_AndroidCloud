@@ -6,8 +6,7 @@
     <uses-permission android:name="android.permission.GET_ACCOUNTS" />
     <uses-permission android:name="android.permission.READ_PROFILE" />
     <uses-permission android:name="android.permission.READ_CONTACTS" />
-
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
     <!-- Include required permissions for Google Mobile Ads to run. -->
     <uses-permission android:name="android.permission.INTERNET" />
@@ -27,28 +26,23 @@
             android:name=".activity.LoginActivity"
             android:label="@string/title_activity_login" />
         <activity android:name=".activity.LauncherActivity">
-
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-
         </activity>
         <activity
             android:name=".activity.MainActivity"
             android:label="@string/title_activity_main"
-            android:theme="@style/AppTheme.NoActionBar">
-
-        </activity>
+            android:theme="@style/AppTheme.NoActionBar"></activity>
         <activity
             android:name=".activity.SettingsActivity"
             android:label="设置" />
         <activity
             android:name=".activity.RegisterActivity"
-            android:label="@string/title_activity_register">
-
-        </activity>
+            android:label="@string/title_activity_register"></activity>
+        <activity android:name=".activity.TransportActivity"></activity>
     </application>
 
 </manifest>

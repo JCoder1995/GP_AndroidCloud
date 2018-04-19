@@ -9,9 +9,16 @@
     tools:context="com.example.jcoder.gp_androidcloud.activity.MainActivity"
     tools:showIn="@layout/app_bar_main">
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/main_recycler"
+    <com.ajguan.library.EasyRefreshLayout
+        android:id="@+id/easy_refresh_layout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent">
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/main_recycler"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+    </com.ajguan.library.EasyRefreshLayout>
 
 </FrameLayout>

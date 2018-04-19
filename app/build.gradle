@@ -50,6 +50,6 @@ dependencies {
     //RecyclerView 插件
     implementation 'com.github.CymChad:BaseRecyclerViewAdapterHelper:2.9.30'
     implementation 'com.orhanobut:logger:2.1.1'
-
-
+    //下拉刷新
+    implementation 'com.github.anzaizai:EasyRefreshLayout:1.3.1'
 }

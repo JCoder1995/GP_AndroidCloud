@@ -55,8 +55,6 @@
         android:maxLines="1"
         android:textColor="@android:color/black"
         android:textSize="@dimen/file_name_textSize"
-        tools:text="此处填写文件名称"
-
         />
 
     <TextView
@@ -81,7 +79,7 @@
 
 
     <droidninja.filepicker.views.SmoothCheckBox
-        android:id="@+id/checkbox"
+        android:id="@+id/smooth_checkbox"
         android:layout_width="@dimen/file_item_checkbox_size"
         android:layout_height="@dimen/file_item_checkbox_size"
         android:layout_alignParentEnd="true"

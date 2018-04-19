@@ -38,7 +38,11 @@ import java.util.List;
 
 import com.example.jcoder.gp_androidcloud.R;
 import com.example.jcoder.gp_androidcloud.Task.LoginTask;
+import com.example.jcoder.gp_androidcloud.bean.UserBean;
+import com.example.jcoder.gp_androidcloud.callbck.JsonCallback;
+import com.example.jcoder.gp_androidcloud.net.OkUtil;
 import com.example.jcoder.gp_androidcloud.utility.UserSharedHelper;
+import com.lzy.okgo.model.Response;
 
 import static android.Manifest.permission.READ_CONTACTS;
 
@@ -66,6 +70,8 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     //用户存储
     private UserSharedHelper userSharedHelper;
     private Context mContext;
+
+    private int status[] = new int[1] ;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -197,34 +203,12 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             // Show a progress spinner, and kick off a background task to
             // perform the user login attempt.
             showProgress(true);
-            loginTask = new LoginTask(email, password);
-            loginTask.execute();
-            loginTask.setLoginCallBack(new LoginTask.LoginCallBack() {
-                @Override
-                public void setBoolean(Boolean status) {
-                    Log.e("LoginStatus", String.valueOf(status));
-                    if (status){
-                        //获取用户信息
-                        Log.e("CallBack_Status", String.valueOf(status));
-                        mContext = getApplicationContext();
-                        userSharedHelper = new UserSharedHelper(mContext);
-                        userSharedHelper.save(email,password);
-                        Toast.makeText(LoginActivity.this,getString(R.string.connect_user_success),Toast.LENGTH_SHORT).show();
-                        Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                        intent.putExtra("username",email);
-                        startActivity(intent);
-                        finish();
-                    }
-                    else {
-                        showProgress(false);
-                        mPasswordView.setError(getString(R.string.error_incorrect_password));
-                        mPasswordView.requestFocus();
-                    }
-                }
-            });
+            //执行登陆方法
+            initUserLogin(email,password);
 
         }
     }
+
 
 
     private boolean isEmailValid(String email) {
@@ -327,5 +311,29 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         int IS_PRIMARY = 1;
     }
 
+    private void initUserLogin(final String email, final String password) {
+        OkUtil.postLogin(email, password, new JsonCallback<UserBean>() {
+            @Override
+            public void onSuccess(Response<UserBean> response) {
+                status[0] = response.body().code;
+                if ( status[0]== 0){
+                    mContext = getApplicationContext();
+                    userSharedHelper = new UserSharedHelper(mContext);
+                    userSharedHelper.save(email,password);
+                    Toast.makeText(LoginActivity.this,getString(R.string.connect_user_success),Toast.LENGTH_SHORT).show();
+                    Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                    intent.putExtra("username",email);
+                    startActivity(intent);
+                    finish();
+                }
+                else {
+                    showProgress(false);
+                    mPasswordView.setError(getString(R.string.error_incorrect_password));
+                    mPasswordView.requestFocus();
+                }
+            }
+        });
+
+    }
 }
 
