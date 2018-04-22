@@ -35,14 +35,19 @@
         <activity
             android:name=".activity.MainActivity"
             android:label="@string/title_activity_main"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".activity.SettingsActivity"
             android:label="设置" />
         <activity
             android:name=".activity.RegisterActivity"
-            android:label="@string/title_activity_register"></activity>
-        <activity android:name=".activity.TransportActivity"></activity>
+            android:label="@string/title_activity_register" />
+        <activity android:name=".activity.TransportActivity" />
+
+        <service
+            android:process=":remote"
+            android:name=".service.FileDownLoadIntentService"
+            android:exported="false"></service>
     </application>
 
 </manifest>

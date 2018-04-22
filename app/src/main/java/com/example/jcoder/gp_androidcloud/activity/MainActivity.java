@@ -43,6 +43,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.lzy.okgo.model.Response;
 
+
 import java.util.ArrayList;
 
 import droidninja.filepicker.FilePickerBuilder;
@@ -100,6 +101,8 @@ public class MainActivity extends AppCompatActivity
 
     //定义多选框
     private SmoothCheckBox mSmoothCheckBox;
+
+
 
 
     @SuppressLint("ResourceAsColor")
