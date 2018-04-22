@@ -20,6 +20,7 @@ android {
 }
 
 dependencies {
+
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation 'com.android.support:appcompat-v7:27.1.0'
     implementation 'com.android.support.constraint:constraint-layout:1.0.2'
@@ -34,12 +35,17 @@ dependencies {
 
     //引用 Gson
     implementation 'com.google.code.gson:gson:2.8.2'
+
     //网络框架
     implementation 'com.lzy.net:okgo:3.0.4'
     implementation 'com.readystatesoftware.chuck:library:1.0.4'
 
+    //文件传输框架
+    implementation 'com.lzy.net:okserver:2.0.5'
+
     //文件选择上传
     compile 'com.droidninja:filepicker:2.1.4'
+
     //原框架有一点问题 Glide 没有导入
     implementation 'com.nineoldandroids:library:2.4.0'
     implementation 'com.github.bumptech.glide:glide:4.6.1'
@@ -51,5 +57,9 @@ dependencies {
     implementation 'com.github.CymChad:BaseRecyclerViewAdapterHelper:2.9.30'
     implementation 'com.orhanobut:logger:2.1.1'
 
-
+    //下拉刷新
+    implementation 'com.github.anzaizai:EasyRefreshLayout:1.3.1'
+    //Butter Knife
+    implementation 'com.jakewharton:butterknife:8.8.1'
+    annotationProcessor 'com.jakewharton:butterknife-compiler:8.8.1'
 }

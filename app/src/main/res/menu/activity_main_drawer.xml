@@ -16,7 +16,7 @@
         <item
             android:id="@+id/nav_lately"
             android:icon="@drawable/ic_access_time_black_24dp"
-            android:title="最近打开" />
+            android:title="传输管理" />
         <item
             android:id="@+id/nav_manage"
             android:icon="@drawable/ic_menu_manage"

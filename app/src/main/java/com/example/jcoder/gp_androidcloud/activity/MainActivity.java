@@ -1,6 +1,7 @@
 package com.example.jcoder.gp_androidcloud.activity;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -8,14 +9,12 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
-import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.util.LongSparseArray;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -26,6 +25,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 
+import com.ajguan.library.EasyRefreshLayout;
+import com.ajguan.library.LoadModel;
 import com.example.jcoder.gp_androidcloud.R;
 import com.example.jcoder.gp_androidcloud.Task.UserTask;
 import com.example.jcoder.gp_androidcloud.adapter.FileAdapter;
@@ -34,32 +35,27 @@ import com.example.jcoder.gp_androidcloud.bean.UserInfo;
 import com.example.jcoder.gp_androidcloud.callbck.JsonCallback;
 import com.example.jcoder.gp_androidcloud.net.OkUtil;
 import com.example.jcoder.gp_androidcloud.utility.UserSharedHelper;
+
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import com.google.gson.reflect.TypeToken;
 import com.lzy.okgo.model.Response;
 
-import org.json.JSONArray;
-import org.json.JSONObject;
 
-import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.List;
 
 import droidninja.filepicker.FilePickerBuilder;
 import droidninja.filepicker.FilePickerConst;
 import droidninja.filepicker.models.sort.SortingTypes;
 import droidninja.filepicker.utils.Orientation;
+import droidninja.filepicker.views.SmoothCheckBox;
 import pub.devrel.easypermissions.EasyPermissions;
 
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
-     //获取当前Activity名称
-    private static final String TAG = MainActivity.class.getName();
     private Button uploadPhoto;
 
     // 再点一次退出程序时间设置
@@ -86,19 +82,27 @@ public class MainActivity extends AppCompatActivity
     private ImageView userInfoImageView;
     private TextView userInfoNickName;
     private TextView userInfoUsername;
-    //
-    public static final int RC_PHOTO_PICKER_PERM = 123;
 
     //文件最大数量
     private int MAX_ATTACHMENT_COUNT = 10;
-    private static final int CUSTOM_REQUEST_CODE = 532;
 
+    public static final int RC_PHOTO_PICKER_PERM = 123;
+    public static final int RC_FILE_PICKER_PERM = 321;
+    private static final int CUSTOM_REQUEST_CODE = 532;
     private ArrayList<String> photoPaths = new ArrayList<>();
     private ArrayList<String> docPaths = new ArrayList<>();
+
+    //定义下拉刷新
+    private EasyRefreshLayout mEasyRefreshLayout;
 
     //定义RecyclerView
     private RecyclerView mRecyclerView;
     private FileAdapter adapter;
+
+    //定义多选框
+    private SmoothCheckBox mSmoothCheckBox;
+
+
 
 
     @SuppressLint("ResourceAsColor")
@@ -117,7 +121,8 @@ public class MainActivity extends AppCompatActivity
         setSupportActionBar(toolbar);
         //获取隐藏布局
         popLayout =(LinearLayout)findViewById(R.id.popLayout);
-
+        //下拉刷新 处理
+        initEasyRefreshLayout();
         //布局可见
         //popLayout.setVisibility(View.VISIBLE);
 
@@ -138,7 +143,10 @@ public class MainActivity extends AppCompatActivity
         //初始化RecyclerView
         initRecyclerView();
         setTitle("我的网盘");
+
+
     }
+
 
     @Override
     public void onSaveInstanceState(Bundle outPersistentState) {
@@ -178,19 +186,19 @@ public class MainActivity extends AppCompatActivity
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-/*         if (id ==R.id.menu_upload_file) {
-
-         }*/
- /*        else if (id == R.id.menu_upload_video){
+         if (id ==R.id.menu_upload_doc) {
+             pickDocClicked();
+         }
+         else if (id == R.id.menu_upload_video){
 
          }
          else if (id == R.id.menu_upload_photo){
              pickPhotoClicked();
          }
          else if (id == R.id.menu_upload_video){
-             pickDocClicked();
-         }*/
 
+
+         }
         return super.onOptionsItemSelected(item);
     }
 
@@ -228,19 +236,18 @@ public class MainActivity extends AppCompatActivity
     }
 
     //获取用户信息 并存储到SharedPreferences
+    //初始化数据
     public void getUserInfo(final String username){
         userTask = new UserTask(username);
         userTask.setUserInfoCallBack(new UserTask.UserCallBack() {
             @Override
             public void setUser(UserInfo userInfo) {
-                nickName= userInfo.nickName;
 
+                nickName= userInfo.nickName;
                 userInfoNickName.setText(nickName);
                 userInfoUsername.setText(userInfo.userName);
-                initFileListView("3","0");
-
-                Log.e("nickName",nickName);
-
+                mEasyRefreshLayout.refreshComplete();
+                initFileListView(userInfo.id,"0");
                 userSharedHelper.save(username,userInfo.passWord,userInfo.id,userInfo.phone,userInfo.nickName);
             }
         });
@@ -256,7 +263,7 @@ public class MainActivity extends AppCompatActivity
         userInfoUsername = headerView.findViewById(R.id.userInfoUsername);
     }
 
-    //用户选择图片上传
+    //用户选择图片上传权限获取
     public void pickPhotoClicked() {
         if (EasyPermissions.hasPermissions(this, FilePickerConst.PERMISSIONS_FILE_PICKER)) {
             onPickPhoto();
@@ -264,10 +271,12 @@ public class MainActivity extends AppCompatActivity
             // Ask for one permission
             EasyPermissions.requestPermissions(this, getString(R.string.rationale_photo_picker),
                     RC_PHOTO_PICKER_PERM, FilePickerConst.PERMISSIONS_FILE_PICKER);
+            pickPhotoClicked();
         }
+
     }
 
-    //用户选择文档上传
+    //用户选择文档上传权限获取
     public void pickDocClicked() {
         if (EasyPermissions.hasPermissions(this, FilePickerConst.PERMISSIONS_FILE_PICKER)) {
             onPickDoc();
@@ -275,10 +284,12 @@ public class MainActivity extends AppCompatActivity
             // Ask for one permission
             EasyPermissions.requestPermissions(this, getString(R.string.rationale_photo_picker),
                     RC_PHOTO_PICKER_PERM, FilePickerConst.PERMISSIONS_FILE_PICKER);
+            pickDocClicked();
         }
+
     }
 
-
+    //选择图片
     public void onPickPhoto() {
         int maxCount = MAX_ATTACHMENT_COUNT - docPaths.size();
         if ((docPaths.size() + photoPaths.size()) == MAX_ATTACHMENT_COUNT) {
@@ -292,13 +303,16 @@ public class MainActivity extends AppCompatActivity
                     .enableVideoPicker(false)
                     .enableSelectAll(true)
                     .setActivityTitle("选择图片")
+                    .showFolderView(false)
+                    .enableSelectAll(true)
                     .enableImagePicker(true)
                     .setCameraPlaceholder(R.drawable.custom_camera)
                     .withOrientation(Orientation.UNSPECIFIED)
-                    .pickPhoto(this,CUSTOM_REQUEST_CODE);
+                    .pickPhoto(this, CUSTOM_REQUEST_CODE);
         }
     }
 
+    //选择文档
     public void onPickDoc() {
         String[] zips   = { ".zip", ".rar" };
         String[] pdfs   = { ".pdf" };
@@ -328,17 +342,103 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    public void initRecyclerView(){
+    //初始化RecyclerView
+    private void initRecyclerView(){
         mRecyclerView = (RecyclerView)findViewById(R.id.main_recycler);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+
     }
-    public void  initFileListView(String uid, String parent){
-        OkUtil.postFileList(uid, parent, new JsonCallback<JsonArray>() {
+
+    //第一次加载文件 默认根目录
+    private void  initFileListView(String uid, String parent){
+        OkUtil.postFileList(uid, parent, new JsonCallback<String>() {
             @Override
-            public void onSuccess(Response<JsonArray> response) {
-                Log.e("sadadasdas",response.body().toString());
+            public void onSuccess(Response<String> response) {
+                JsonArray filesList = analysisJson(response);
+                getFilesList(filesList);
+                FileAdapter fileAdapter = new FileAdapter(R.layout.file_list_main,getFilesList(filesList));
+                mRecyclerView.setAdapter(fileAdapter);
+            }
+        });
+    }
+
+    //分析后台传过来的数据
+    private JsonArray analysisJson(Response<String> response){
+        JsonArray jsonArray1 = new JsonArray();
+        if (response!=null){
+            //Json的解析类对象
+            JsonParser parser = new JsonParser();
+            //将JSON的String 转成一个JsonArray对象
+            JsonArray jsonArray = parser.parse(response.body().toString()).getAsJsonArray();
+            for (int i = 0; i<jsonArray.size();i++){
+                JsonObject jsonObject = (JsonObject) jsonArray.get(i);
+                JsonObject jsonObject1 = (JsonObject) jsonObject.get("attrs");
+                jsonArray1.add(jsonObject1);
+            }
+            Log.e("jsonArray1",jsonArray1.toString());
+        }
+        return jsonArray1;
+    }
+
+    //获取文件列表
+    private ArrayList<FileList> getFilesList(JsonArray jsonElements) {
+
+        //Json的解析类对象
+        JsonParser parser = new JsonParser();
+        //将JSON的String 转成一个JsonArray对象
+        JsonArray jsonArray = parser.parse(jsonElements.toString()).getAsJsonArray();
+
+        Gson gson = new Gson();
+        ArrayList<FileList> filesBeanList = new ArrayList<>();
+
+        //加强for循环遍历JsonArray
+        for (JsonElement file : jsonArray) {
+            //使用GSON，直接转成Bean对象
+            FileList fileList = gson.fromJson(file, FileList.class);
+            filesBeanList.add(fileList);
+        }
+        return  filesBeanList;
+    }
+
+    //下拉刷新文件处理
+    private void initEasyRefreshLayout(){
+        //获取下拉刷新
+        mEasyRefreshLayout=(EasyRefreshLayout)findViewById(R.id.easy_refresh_layout);
+        mEasyRefreshLayout.setLoadMoreModel(LoadModel.NONE);
+        mEasyRefreshLayout.autoRefresh();
+        mEasyRefreshLayout.addEasyEvent(new EasyRefreshLayout.EasyEvent() {
+            @Override
+            public void onLoadMore() {
+            }
+            @Override
+            public void onRefreshing() {
 
             }
         });
     }
+
+    //获取返回的文件
+    @Override protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        switch (requestCode) {
+            case CUSTOM_REQUEST_CODE:
+                if (resultCode == Activity.RESULT_OK && data != null) {
+                    photoPaths = new ArrayList<>();
+                    photoPaths.addAll(data.getStringArrayListExtra(FilePickerConst.KEY_SELECTED_MEDIA));
+                }
+                break;
+
+            case FilePickerConst.REQUEST_CODE_DOC:
+                if (resultCode == Activity.RESULT_OK && data != null) {
+                    docPaths = new ArrayList<>();
+                    docPaths.addAll(data.getStringArrayListExtra(FilePickerConst.KEY_SELECTED_DOCS));
+                }
+                break;
+        }
+        Log.e("photoPaths", String.valueOf(photoPaths.size()));
+        Log.e("photoPaths",photoPaths.toString());
+        Log.e("docPaths", docPaths.toString());
+    }
+
+
 }
