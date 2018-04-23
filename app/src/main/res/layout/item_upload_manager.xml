@@ -42,7 +42,6 @@
             android:id="@+id/name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:maxLines="1"
             android:text="应用名字"
             android:textColor="#000"
             android:textSize="14sp"/>
@@ -100,13 +99,13 @@
     </LinearLayout>
 
     <Button
-        android:id="@+id/start"
+        android:id="@+id/upload"
         android:layout_width="40dp"
         android:layout_height="match_parent"
         android:layout_gravity="center"
         android:background="#E30"
         android:padding="5dp"
-        android:text="下载"
+        android:text="上传"
         android:textColor="#FFF"/>
 
     <Button
@@ -126,6 +125,6 @@
         android:layout_gravity="center"
         android:background="#03E"
         android:padding="5dp"
-        android:text="重新\n下载"
+        android:text="重新\n上传"
         android:textColor="#FFF"/>
 </LinearLayout>
