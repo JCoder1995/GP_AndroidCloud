@@ -214,7 +214,8 @@ public class MainActivity extends AppCompatActivity
         } else if (id == R.id.nav_collection) {
 
         } else if (id == R.id.nav_lately) {
-
+            Intent intent = new Intent(MainActivity.this,FileTranSportActivity.class);
+            startActivity(intent);
         } else if (id == R.id.nav_manage) {
             Intent intent = new Intent(MainActivity.this,SettingsActivity.class);
             startActivity(intent);
@@ -242,7 +243,6 @@ public class MainActivity extends AppCompatActivity
         userTask.setUserInfoCallBack(new UserTask.UserCallBack() {
             @Override
             public void setUser(UserInfo userInfo) {
-
                 nickName= userInfo.nickName;
                 userInfoNickName.setText(nickName);
                 userInfoUsername.setText(userInfo.userName);

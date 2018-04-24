@@ -42,12 +42,20 @@
         <activity
             android:name=".activity.RegisterActivity"
             android:label="@string/title_activity_register" />
-        <activity android:name=".activity.TransportActivity" />
 
         <service
-            android:process=":remote"
             android:name=".service.FileDownLoadIntentService"
-            android:exported="false"></service>
+            android:exported="false"
+            android:process=":remote" />
+
+        <activity
+            android:name=".activity.FileTranSportActivity"
+            android:label="@string/title_activity_file_tran_sport"
+            android:parentActivityName=".activity.MainActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.example.jcoder.gp_androidcloud.activity.MainActivity" />
+        </activity>
     </application>
 
 </manifest>
