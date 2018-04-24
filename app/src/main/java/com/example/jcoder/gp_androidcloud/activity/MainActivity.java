@@ -44,6 +44,7 @@ import com.google.gson.JsonParser;
 import com.lzy.okgo.model.Response;
 
 
+import java.io.File;
 import java.util.ArrayList;
 
 import droidninja.filepicker.FilePickerBuilder;
@@ -435,6 +436,8 @@ public class MainActivity extends AppCompatActivity
         Log.e("photoPaths", String.valueOf(photoPaths.size()));
         Log.e("photoPaths",photoPaths.toString());
         Log.e("docPaths", docPaths.toString());
+        File file = new File("/storage/emulated/0/Tencent/MobileQQ/pddata/prd/picedit/artfilter/mengxi/1.zip");
+
     }
 
 
