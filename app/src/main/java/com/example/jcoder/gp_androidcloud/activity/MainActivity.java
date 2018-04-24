@@ -102,9 +102,6 @@ public class MainActivity extends AppCompatActivity
     //定义多选框
     private SmoothCheckBox mSmoothCheckBox;
 
-
-
-
     @SuppressLint("ResourceAsColor")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
