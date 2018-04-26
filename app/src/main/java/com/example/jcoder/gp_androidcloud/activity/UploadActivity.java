@@ -35,6 +35,7 @@ public class UploadActivity extends BaseActivity implements XExecutor.OnAllTaskE
     @BindView(R.id.recyclerView)
     RecyclerView recyclerView;
     @BindView(R.id.deleteAll)
+
     Button delete;
     @BindView(R.id.upload) Button upload;
     @Override
