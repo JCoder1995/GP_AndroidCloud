@@ -45,6 +45,7 @@ import com.lzy.okgo.model.Response;
 
 
 import java.io.File;
+import java.io.Serializable;
 import java.util.ArrayList;
 
 import droidninja.filepicker.FilePickerBuilder;
@@ -211,10 +212,13 @@ public class MainActivity extends AppCompatActivity
 
         } else if (id == R.id.nav_collection) {
 
-        } else if (id == R.id.nav_lately) {
-            Intent intent = new Intent(MainActivity.this,FileTranSportActivity.class);
+        } else if (id == R.id.nav_upload) {
+
+        } else if (id == R.id.nav_download){
+            Intent intent = new Intent(MainActivity.this,DownLoadActivity.class);
             startActivity(intent);
-        } else if (id == R.id.nav_manage) {
+        }
+        else if (id == R.id.nav_manage) {
             Intent intent = new Intent(MainActivity.this,SettingsActivity.class);
             startActivity(intent);
         } else if (id == R.id.nav_share) {
@@ -373,7 +377,6 @@ public class MainActivity extends AppCompatActivity
                 JsonObject jsonObject1 = (JsonObject) jsonObject.get("attrs");
                 jsonArray1.add(jsonObject1);
             }
-            Log.e("jsonArray1",jsonArray1.toString());
         }
         return jsonArray1;
     }
@@ -423,6 +426,7 @@ public class MainActivity extends AppCompatActivity
                 if (resultCode == Activity.RESULT_OK && data != null) {
                     photoPaths = new ArrayList<>();
                     photoPaths.addAll(data.getStringArrayListExtra(FilePickerConst.KEY_SELECTED_MEDIA));
+                    intentActivity("uploadPhoto",photoPaths);
                 }
                 break;
 
@@ -430,15 +434,17 @@ public class MainActivity extends AppCompatActivity
                 if (resultCode == Activity.RESULT_OK && data != null) {
                     docPaths = new ArrayList<>();
                     docPaths.addAll(data.getStringArrayListExtra(FilePickerConst.KEY_SELECTED_DOCS));
+                    intentActivity("uploaddoc",docPaths);
                 }
                 break;
         }
-        Log.e("photoPaths", String.valueOf(photoPaths.size()));
-        Log.e("photoPaths",photoPaths.toString());
-        Log.e("docPaths", docPaths.toString());
-        File file = new File("/storage/emulated/0/Tencent/MobileQQ/pddata/prd/picedit/artfilter/mengxi/1.zip");
-
     }
 
-
+    public void intentActivity(String upLoadName,ArrayList arrayList){
+        Intent intent = new Intent(this,UploadActivity.class);
+        Bundle bundlePhoto= new Bundle();
+        bundlePhoto.putSerializable(upLoadName,(Serializable)arrayList);
+        intent.putExtra(upLoadName,bundlePhoto);
+        startActivity(intent);
+    }
 }

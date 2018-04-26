@@ -14,9 +14,13 @@
             android:icon="@drawable/ic_collections_bookmark_black_24dp"
             android:title="我的收藏" />
         <item
-            android:id="@+id/nav_lately"
-            android:icon="@drawable/ic_access_time_black_24dp"
-            android:title="传输管理" />
+            android:id="@+id/nav_upload"
+            android:icon="@drawable/ic_file_upload_black_24dp"
+            android:title="上传管理" />
+        <item
+            android:id="@+id/nav_download"
+            android:icon="@drawable/ic_file_download_black_24dp"
+            android:title="下载管理" />
         <item
             android:id="@+id/nav_manage"
             android:icon="@drawable/ic_menu_manage"

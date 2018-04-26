@@ -16,6 +16,7 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
     <application
+        android:name=".application.GApp"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -48,15 +49,9 @@
             android:exported="false"
             android:process=":remote" />
 
-        <activity
-            android:name=".activity.FileTranSportActivity"
-            android:label="@string/title_activity_file_tran_sport"
-            android:parentActivityName=".activity.MainActivity">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.example.jcoder.gp_androidcloud.activity.MainActivity" />
-        </activity>
-        <activity android:name=".activity.TestActivity"></activity>
+        <activity android:name=".activity.TestActivity" />
+        <activity android:name=".activity.DownLoadActivity" />
+        <activity android:name=".activity.UploadActivity"></activity>
     </application>
 
 </manifest>
