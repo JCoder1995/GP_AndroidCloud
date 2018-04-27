@@ -51,7 +51,9 @@
 
         <activity android:name=".activity.TestActivity" />
         <activity android:name=".activity.DownLoadActivity" />
-        <activity android:name=".activity.UploadActivity"></activity>
+        <activity android:name=".activity.UploadActivity"
+                    android:label="文件上传"
+            ></activity>
     </application>
 
 </manifest>

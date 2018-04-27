@@ -53,15 +53,6 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-/**
- * ================================================
- * 作    者：jeasonlzy（廖子尧）Github地址：https://github.com/jeasonlzy
- * 版    本：1.0
- * 创建日期：2017/6/5
- * 描    述：
- * 修订历史：
- * ================================================
- */
 public class UploadAdapter extends RecyclerView.Adapter<UploadAdapter.ViewHolder> {
 
     public static final int TYPE_ALL = 0;
@@ -74,6 +65,8 @@ public class UploadAdapter extends RecyclerView.Adapter<UploadAdapter.ViewHolder
     private LayoutInflater inflater;
     private Context context;
     private int type = -1;
+    private String user_uid ;
+    private String user_fid;
 
     public UploadAdapter(Context context) {
         this.context = context;
@@ -100,7 +93,9 @@ public class UploadAdapter extends RecyclerView.Adapter<UploadAdapter.ViewHolder
         notifyDataSetChanged();
     }
 
-    public List<UploadTask<?>> updateData(List<FileTranSport> fileTranSport) {
+    public List<UploadTask<?>> updateData(List<FileTranSport> fileTranSport,String uid,String fid) {
+        user_uid=uid;
+        user_fid=fid;
         this.type = -1;
         this.fileTranSports = fileTranSport;
         values = new ArrayList<>();
@@ -112,8 +107,8 @@ public class UploadAdapter extends RecyclerView.Adapter<UploadAdapter.ViewHolder
                 String uploadpath ="";
                 //这里是演示可以传递任何数据
                 PostRequest<String> postRequest = OkGo.<String>post(Urls.URL_FORM_UPLOAD)//
-                        .headers("aaa", "111")//
-                        .params("bbb", "222")//
+                        .params("uid",uid)
+                        .params("fid", fid)//
                         .params("fileKey" + i, new File(imageItem.url))//
                         .converter(new StringConvert());
 
@@ -197,7 +192,12 @@ public class UploadAdapter extends RecyclerView.Adapter<UploadAdapter.ViewHolder
         public void bind() {
             Progress progress = task.progress;
             FileTranSport item = (FileTranSport) progress.extra1;
-            Glide.with(context).load(R.mipmap.ic_launcher).into(icon);
+            if (item.type==6){
+                Glide.with(context).load(item.url).into(icon);
+            }
+            else {
+                Glide.with(context).load(R.mipmap.ic_launcher).into(icon);
+            }
             name.setText(item.name);
             priority.setText(String.format("优先级：%s", progress.priority));
         }
@@ -271,7 +271,7 @@ public class UploadAdapter extends RecyclerView.Adapter<UploadAdapter.ViewHolder
                 if (removeIndex != -1) {
                     fileTranSports.remove(removeIndex);
                 }
-                updateData(fileTranSports);
+                updateData(fileTranSports,user_uid,user_fid);
             } else {
                 updateData(type);
             }

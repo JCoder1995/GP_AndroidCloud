@@ -18,6 +18,6 @@ package com.example.jcoder.gp_androidcloud.util;
 
 
 public class Urls {
-    public static final String SERVER = "http://server.jeasonlzy.com/OkHttpUtils/";
-    public static final String URL_FORM_UPLOAD = SERVER + "upload";
+    public static final String SERVER = "http://115.159.209.140:8080/GP_BackStage";
+    public static final String URL_FORM_UPLOAD = SERVER + "/file/fileUpload";
 }

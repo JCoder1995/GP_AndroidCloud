@@ -43,8 +43,6 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.lzy.okgo.model.Response;
 
-
-import java.io.File;
 import java.io.Serializable;
 import java.util.ArrayList;
 
@@ -70,7 +68,6 @@ public class MainActivity extends AppCompatActivity
     //用户信息
     private String mUsername; //用户名
     private String nickName;  //真实姓名
-    private String uid;  //用户uid
 
 
     //定义UserTask
@@ -103,6 +100,10 @@ public class MainActivity extends AppCompatActivity
 
     //定义多选框
     private SmoothCheckBox mSmoothCheckBox;
+
+    //定义uid fid
+    private String  uid;
+    private int  fid=0;
 
     @SuppressLint("ResourceAsColor")
     @Override
@@ -242,9 +243,12 @@ public class MainActivity extends AppCompatActivity
     //初始化数据
     public void getUserInfo(final String username){
         userTask = new UserTask(username);
+
         userTask.setUserInfoCallBack(new UserTask.UserCallBack() {
             @Override
             public void setUser(UserInfo userInfo) {
+                uid =userInfo.id;
+                Log.e("adsdsadsad",userInfo.id);
                 nickName= userInfo.nickName;
                 userInfoNickName.setText(nickName);
                 userInfoUsername.setText(userInfo.userName);
@@ -253,6 +257,7 @@ public class MainActivity extends AppCompatActivity
                 userSharedHelper.save(username,userInfo.passWord,userInfo.id,userInfo.phone,userInfo.nickName);
             }
         });
+
         userTask.execute();
     }
 
@@ -424,9 +429,11 @@ public class MainActivity extends AppCompatActivity
         switch (requestCode) {
             case CUSTOM_REQUEST_CODE:
                 if (resultCode == Activity.RESULT_OK && data != null) {
+                    Log.e("asdasdsadas",
+                            data.getStringArrayListExtra("SELECTED_PHOTOS").toString());
                     photoPaths = new ArrayList<>();
                     photoPaths.addAll(data.getStringArrayListExtra(FilePickerConst.KEY_SELECTED_MEDIA));
-                    intentActivity("uploadPhoto",photoPaths);
+                    intentActivity("uploadPhoto",photoPaths,uid,fid);
                 }
                 break;
 
@@ -434,17 +441,19 @@ public class MainActivity extends AppCompatActivity
                 if (resultCode == Activity.RESULT_OK && data != null) {
                     docPaths = new ArrayList<>();
                     docPaths.addAll(data.getStringArrayListExtra(FilePickerConst.KEY_SELECTED_DOCS));
-                    intentActivity("uploaddoc",docPaths);
+                    intentActivity("uploadDoc",docPaths,uid,fid);
                 }
                 break;
         }
     }
 
-    public void intentActivity(String upLoadName,ArrayList arrayList){
+    public void intentActivity(String upLoadName,ArrayList arrayList,String uid,int fid){
         Intent intent = new Intent(this,UploadActivity.class);
         Bundle bundlePhoto= new Bundle();
         bundlePhoto.putSerializable(upLoadName,(Serializable)arrayList);
         intent.putExtra(upLoadName,bundlePhoto);
+        intent.putExtra("uid",uid);
+        intent.putExtra("fid",fid);
         startActivity(intent);
     }
 }

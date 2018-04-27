@@ -1,52 +1,47 @@
 package com.example.jcoder.gp_androidcloud.activity;
 
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
-import android.util.Log;
+import android.view.View;
 import android.widget.Button;
 
 import com.example.jcoder.gp_androidcloud.R;
 import com.example.jcoder.gp_androidcloud.adapter.UploadAdapter;
 import com.example.jcoder.gp_androidcloud.base.BaseActivity;
-import com.lzy.okgo.OkGo;
-import com.lzy.okgo.request.PostRequest;
+import com.example.jcoder.gp_androidcloud.model.FileTranSport;
 import com.lzy.okserver.OkUpload;
 import com.lzy.okserver.task.XExecutor;
 import com.lzy.okserver.upload.UploadTask;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
+import butterknife.OnClick;
 
 public class UploadActivity extends BaseActivity implements XExecutor.OnAllTaskEndListener{
 
-    private OkUpload okUpload;
-    private UploadAdapter adapter;
+    @BindView(R.id.upload_recyclerView)
+    RecyclerView recyclerView;
+    @BindView(R.id.upload_deleteAll)
+    Button delete;
+    @BindView(R.id.upload_begin) Button upload;
 
+    private UploadAdapter adapter;
+    private OkUpload okUpload;
     private List<UploadTask<?>> tasks;
 
-    @BindView(R.id.toolbar)
-    Toolbar toolbar;
-    @BindView(R.id.recyclerView)
-    RecyclerView recyclerView;
-    @BindView(R.id.deleteAll)
+    private String uid;
+    private String fid;
 
-    Button delete;
-    @BindView(R.id.upload) Button upload;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_upload_list);
 
-        Intent intent = getIntent();
-        Bundle args = intent.getBundleExtra("uploadPhoto");
-        ArrayList<String> object = (ArrayList<String>) args.getSerializable("uploadPhoto");
-        Log.e("asdsadsadsadas",object.toString());
+        setContentView(R.layout.activity_upload_list);
 
         okUpload = OkUpload.getInstance();
         okUpload.getThreadPool().setCorePoolSize(1);
@@ -56,6 +51,7 @@ public class UploadActivity extends BaseActivity implements XExecutor.OnAllTaskE
         recyclerView.setAdapter(adapter);
 
         okUpload.addOnAllTaskEndListener(this);
+        getIntentFromMainActivity();
     }
 
     @Override
@@ -69,4 +65,46 @@ public class UploadActivity extends BaseActivity implements XExecutor.OnAllTaskE
     public void onAllTaskEnd() {
         showToast("所有任务已经上传完成");
     }
-}
+
+
+    public void getIntentFromMainActivity() {
+        Intent intent = getIntent();
+        Bundle args = intent.getBundleExtra("uploadPhoto");
+        Bundle args1 = intent.getBundleExtra("uploadPhoto");
+
+        uid =intent.getStringExtra("uid");
+        fid = intent.getStringExtra("fid");
+
+        ArrayList<String> uploadPhoto = (ArrayList<String>) args.getSerializable("uploadPhoto");
+        ArrayList<String> uploadDoc = (ArrayList<String>) args1.getSerializable("uploadPhoto");
+
+        if (uploadPhoto!=null){
+            List<FileTranSport> fileTranSports = new ArrayList<>();
+            for (int i =0;i<uploadPhoto.size();i++){
+                File file = new File(uploadPhoto.get(i));
+                FileTranSport fileTranSport = new FileTranSport();
+                fileTranSport.setName(file.getName());
+                fileTranSport.setUrl(file.getAbsolutePath());
+                fileTranSport.setSize(file.length());
+                fileTranSport.setType(6);
+                fileTranSports.add(fileTranSport);
+            }
+            tasks = adapter.updateData(fileTranSports,uid,fid);
+        }
+        else {
+            // showToast("没有数据");
+        }
+    }
+
+    @OnClick(R.id.upload_begin)
+    public void upload_begin(View view){
+        if (tasks == null) {
+            showToast("请先选择图片");
+            return;
+        }
+        for (UploadTask<?> task : tasks) {
+            task.start();
+        }
+    }
+    }
+
