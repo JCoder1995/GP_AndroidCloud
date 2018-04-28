@@ -46,6 +46,7 @@ import com.lzy.okgo.model.Response;
 import java.io.Serializable;
 import java.util.ArrayList;
 
+import butterknife.BindView;
 import droidninja.filepicker.FilePickerBuilder;
 import droidninja.filepicker.FilePickerConst;
 import droidninja.filepicker.models.sort.SortingTypes;
@@ -105,6 +106,7 @@ public class MainActivity extends AppCompatActivity
     private String  uid;
     private int  fid=0;
 
+
     @SuppressLint("ResourceAsColor")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -140,10 +142,19 @@ public class MainActivity extends AppCompatActivity
         //获取NavigationView header中的控件
         setNavHead(navigationView);
 
+
         //初始化RecyclerView
         initRecyclerView();
         setTitle("我的网盘");
-
+        View child = getLayoutInflater().inflate(R.layout.file_list_main,null);
+        //监听
+        mSmoothCheckBox = (SmoothCheckBox)child.findViewById(R.id.file_smooth_checkbox);
+        mSmoothCheckBox.setOnCheckedChangeListener(new SmoothCheckBox.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(SmoothCheckBox checkBox, boolean isChecked) {
+                Log.d("SmoothCheckBox", String.valueOf(isChecked));
+            }
+        });
 
     }
 

@@ -79,7 +79,7 @@
 
 
     <droidninja.filepicker.views.SmoothCheckBox
-        android:id="@+id/smooth_checkbox"
+        android:id="@+id/file_smooth_checkbox"
         android:layout_width="@dimen/file_item_checkbox_size"
         android:layout_height="@dimen/file_item_checkbox_size"
         android:layout_alignParentEnd="true"
