@@ -18,6 +18,7 @@ package com.example.jcoder.gp_androidcloud.adapter;
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.text.format.Formatter;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -66,7 +67,8 @@ public class UploadAdapter extends RecyclerView.Adapter<UploadAdapter.ViewHolder
     private Context context;
     private int type = -1;
     private String user_uid ;
-    private String user_fid;
+    private int user_fid;
+    private List<String> user_fileListName;
 
     public UploadAdapter(Context context) {
         this.context = context;
@@ -93,9 +95,10 @@ public class UploadAdapter extends RecyclerView.Adapter<UploadAdapter.ViewHolder
         notifyDataSetChanged();
     }
 
-    public List<UploadTask<?>> updateData(List<FileTranSport> fileTranSport,String uid,String fid) {
+    public List<UploadTask<?>> updateData(List<FileTranSport> fileTranSport,String uid,int fid,List<String> fileListName) {
         user_uid=uid;
         user_fid=fid;
+        user_fileListName =fileListName;
         this.type = -1;
         this.fileTranSports = fileTranSport;
         values = new ArrayList<>();
@@ -109,6 +112,7 @@ public class UploadAdapter extends RecyclerView.Adapter<UploadAdapter.ViewHolder
                 PostRequest<String> postRequest = OkGo.<String>post(Urls.URL_FORM_UPLOAD)//
                         .params("uid",uid)
                         .params("fid", fid)//
+                        .params("filelistname",fileListName.get(i).toString())
                         .params("fileKey" + i, new File(imageItem.url))//
                         .converter(new StringConvert());
 
@@ -271,7 +275,7 @@ public class UploadAdapter extends RecyclerView.Adapter<UploadAdapter.ViewHolder
                 if (removeIndex != -1) {
                     fileTranSports.remove(removeIndex);
                 }
-                updateData(fileTranSports,user_uid,user_fid);
+                updateData(fileTranSports,user_uid,user_fid,user_fileListName);
             } else {
                 updateData(type);
             }

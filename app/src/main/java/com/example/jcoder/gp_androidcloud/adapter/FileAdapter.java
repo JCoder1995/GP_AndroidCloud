@@ -14,13 +14,18 @@ import com.example.jcoder.gp_androidcloud.bean.FileList;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.List;
+import java.util.Map;
+
+import droidninja.filepicker.views.SmoothCheckBox;
 
 /**
  * Created by JCoder on 2018/4/16.
  */
 
 public class FileAdapter extends BaseQuickAdapter<FileList,BaseViewHolder> implements BaseQuickAdapter.OnItemClickListener,BaseQuickAdapter.OnItemLongClickListener {
+
+    private SmoothCheckBox checkBox;
+    public Map<Integer,Boolean> isCheck ;
 
 
     public FileAdapter(int layoutResId, @Nullable ArrayList<FileList> data) {
@@ -29,7 +34,7 @@ public class FileAdapter extends BaseQuickAdapter<FileList,BaseViewHolder> imple
 
     @Override
     protected void convert(BaseViewHolder helper, FileList item) {
-        helper.addOnClickListener(R.id.file_iv);
+
         switch (item.filetype){
             case 0:
                 helper.setImageResource(R.id.file_iv,R.drawable.icon_file_unknown);
@@ -59,8 +64,7 @@ public class FileAdapter extends BaseQuickAdapter<FileList,BaseViewHolder> imple
                 break;
 
             case 6:
-                helper.setImageResource(R.id.file_iv,R.drawable.icon_file_unknown);
-                helper.setText(R.id.file_type_tv,"Photo");
+                Glide.with(mContext).load(item.filepath).into((ImageView) helper.getView(R.id.file_iv));
                 break;
 
             case 7:
@@ -79,6 +83,9 @@ public class FileAdapter extends BaseQuickAdapter<FileList,BaseViewHolder> imple
         String createdate = sdf.format(item.s_ctime);
         helper.setText(R.id.file_name_tv,item.name);
         helper.setText(R.id.file_time,createdate);
+        helper.setChecked(R.id.file_smooth_checkbox,false);
+        checkBox=(SmoothCheckBox)helper.getView(R.id.file_smooth_checkbox);
+
     }
 
     @Override
@@ -90,4 +97,6 @@ public class FileAdapter extends BaseQuickAdapter<FileList,BaseViewHolder> imple
     public boolean onItemLongClick(BaseQuickAdapter adapter, View view, int position) {
         return false;
     }
+
+
 }

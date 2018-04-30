@@ -11,5 +11,6 @@ public class FileList {
     public Date s_ctime;
     public String name;
     public String size;
+    public String filepath;
 
 }

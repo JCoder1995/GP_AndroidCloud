@@ -27,7 +27,7 @@ public class OkUtil {
      * @param <T>
      */
 
-    private static String ip ="http://115.159.209.140:8080/GP_BackStage";
+    private static String ip ="http://192.168.179.64:8080/GP_BackStage";
     private static String userLoginUrl = ip+"/user/login";
     private static String userRegisterUrl = ip+"/user/register";
     private static String userInfo = ip+"/user/getUser";

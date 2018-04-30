@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
@@ -35,13 +36,14 @@ public class UploadActivity extends BaseActivity implements XExecutor.OnAllTaskE
     private List<UploadTask<?>> tasks;
 
     private String uid;
-    private String fid;
+    private int fid;
 
+    private List<String> fileListName;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         setContentView(R.layout.activity_upload_list);
+
 
         okUpload = OkUpload.getInstance();
         okUpload.getThreadPool().setCorePoolSize(1);
@@ -49,9 +51,9 @@ public class UploadActivity extends BaseActivity implements XExecutor.OnAllTaskE
         adapter = new UploadAdapter(this);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(adapter);
+        getIntentFromMainActivity();
 
         okUpload.addOnAllTaskEndListener(this);
-        getIntentFromMainActivity();
     }
 
     @Override
@@ -68,12 +70,17 @@ public class UploadActivity extends BaseActivity implements XExecutor.OnAllTaskE
 
 
     public void getIntentFromMainActivity() {
+
         Intent intent = getIntent();
         Bundle args = intent.getBundleExtra("uploadPhoto");
         Bundle args1 = intent.getBundleExtra("uploadPhoto");
+        fileListName = new ArrayList<String>();
 
         uid =intent.getStringExtra("uid");
-        fid = intent.getStringExtra("fid");
+        String fidFromActivity=getIntent().getStringExtra("fid");
+        Log.e("wqewrgsdg",fidFromActivity);
+        fid =Integer.parseInt(fidFromActivity);
+        Log.e("wqewrgsdg",String.valueOf(fid));
 
         ArrayList<String> uploadPhoto = (ArrayList<String>) args.getSerializable("uploadPhoto");
         ArrayList<String> uploadDoc = (ArrayList<String>) args1.getSerializable("uploadPhoto");
@@ -83,13 +90,16 @@ public class UploadActivity extends BaseActivity implements XExecutor.OnAllTaskE
             for (int i =0;i<uploadPhoto.size();i++){
                 File file = new File(uploadPhoto.get(i));
                 FileTranSport fileTranSport = new FileTranSport();
+                fileListName.add(file.getName());
                 fileTranSport.setName(file.getName());
                 fileTranSport.setUrl(file.getAbsolutePath());
                 fileTranSport.setSize(file.length());
                 fileTranSport.setType(6);
                 fileTranSports.add(fileTranSport);
             }
-            tasks = adapter.updateData(fileTranSports,uid,fid);
+            Log.e("sadsadsadas",fileListName.toString());
+
+            tasks = adapter.updateData(fileTranSports,uid,fid,fileListName);
         }
         else {
             // showToast("没有数据");
@@ -106,5 +116,6 @@ public class UploadActivity extends BaseActivity implements XExecutor.OnAllTaskE
             task.start();
         }
     }
+
     }
 

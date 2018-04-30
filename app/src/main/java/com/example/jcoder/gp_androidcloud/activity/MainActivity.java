@@ -27,6 +27,7 @@ import android.widget.Toast;
 
 import com.ajguan.library.EasyRefreshLayout;
 import com.ajguan.library.LoadModel;
+import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.example.jcoder.gp_androidcloud.R;
 import com.example.jcoder.gp_androidcloud.Task.UserTask;
 import com.example.jcoder.gp_androidcloud.adapter.FileAdapter;
@@ -45,8 +46,10 @@ import com.lzy.okgo.model.Response;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-import butterknife.BindView;
 import droidninja.filepicker.FilePickerBuilder;
 import droidninja.filepicker.FilePickerConst;
 import droidninja.filepicker.models.sort.SortingTypes;
@@ -106,6 +109,12 @@ public class MainActivity extends AppCompatActivity
     private String  uid;
     private int  fid=0;
 
+    //用户存储条目的选择状态
+    private Map<Integer, Boolean> isCheck = new HashMap<>();
+    //用于存放已选择的条目
+    private List<Integer> selectList = new ArrayList<>();
+
+    //多选
 
     @SuppressLint("ResourceAsColor")
     @Override
@@ -135,6 +144,7 @@ public class MainActivity extends AppCompatActivity
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
         toggle.syncState();
+
         //加载导航栏布局
         NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
@@ -142,20 +152,19 @@ public class MainActivity extends AppCompatActivity
         //获取NavigationView header中的控件
         setNavHead(navigationView);
 
-
         //初始化RecyclerView
         initRecyclerView();
         setTitle("我的网盘");
+
         View child = getLayoutInflater().inflate(R.layout.file_list_main,null);
         //监听
-        mSmoothCheckBox = (SmoothCheckBox)child.findViewById(R.id.file_smooth_checkbox);
+/*        mSmoothCheckBox = (SmoothCheckBox)child.findViewById(R.id.file_smooth_checkbox);
         mSmoothCheckBox.setOnCheckedChangeListener(new SmoothCheckBox.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(SmoothCheckBox checkBox, boolean isChecked) {
                 Log.d("SmoothCheckBox", String.valueOf(isChecked));
             }
-        });
-
+        });*/
     }
 
 
@@ -440,8 +449,6 @@ public class MainActivity extends AppCompatActivity
         switch (requestCode) {
             case CUSTOM_REQUEST_CODE:
                 if (resultCode == Activity.RESULT_OK && data != null) {
-                    Log.e("asdasdsadas",
-                            data.getStringArrayListExtra("SELECTED_PHOTOS").toString());
                     photoPaths = new ArrayList<>();
                     photoPaths.addAll(data.getStringArrayListExtra(FilePickerConst.KEY_SELECTED_MEDIA));
                     intentActivity("uploadPhoto",photoPaths,uid,fid);
@@ -464,7 +471,27 @@ public class MainActivity extends AppCompatActivity
         bundlePhoto.putSerializable(upLoadName,(Serializable)arrayList);
         intent.putExtra(upLoadName,bundlePhoto);
         intent.putExtra("uid",uid);
-        intent.putExtra("fid",fid);
+        intent.putExtra("fid",fid+"");
         startActivity(intent);
+    }
+
+    public void refreshList(){
+
+    }
+
+    public void adapterClick(){
+        adapter.setOnItemChildClickListener(new BaseQuickAdapter.OnItemChildClickListener() {
+            @Override
+            public void onItemChildClick(BaseQuickAdapter adapter, View view, int position) {
+                Log.e("jhfsdlkksh","onItemClick" + position);
+            }
+        });
+        adapter.setOnItemLongClickListener(new BaseQuickAdapter.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(BaseQuickAdapter adapter, View view, int position) {
+                Log.e("jhfsdlkksh","onItemClick" + position);
+                return false;
+            }
+        });
     }
 }
