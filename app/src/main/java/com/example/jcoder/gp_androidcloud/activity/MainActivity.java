@@ -100,27 +100,27 @@ public class MainActivity extends AppCompatActivity
 
     //定义RecyclerView
     private RecyclerView mRecyclerView;
-    private FileAdapter adapter;
-
-    //定义多选框
-    private SmoothCheckBox mSmoothCheckBox;
 
     //定义uid fid
     private String  uid;
     private int  fid=0;
 
-    //用户存储条目的选择状态
-    private Map<Integer, Boolean> isCheck = new HashMap<>();
-    //用于存放已选择的条目
-    private List<Integer> selectList = new ArrayList<>();
+    //定义用户目录
+    private ArrayList<Integer> fileSystem = new ArrayList<Integer>();
 
-    //多选
+    //文件adapter
+    private FileAdapter fileAdapter;
+    ArrayList<FileList> fileLists = new ArrayList<FileList>();
+
+    private List<HashMap<String,Object>> list = new ArrayList<HashMap<String,Object>>();
+    private List<String> listStr = new ArrayList<String>();
 
     @SuppressLint("ResourceAsColor")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        fileSystem.add(0);
         //获取SharedPreferences
         mContext = getApplicationContext();
         userSharedHelper = new UserSharedHelper(mContext);
@@ -156,16 +156,8 @@ public class MainActivity extends AppCompatActivity
         initRecyclerView();
         setTitle("我的网盘");
 
-        View child = getLayoutInflater().inflate(R.layout.file_list_main,null);
-        //监听
-/*        mSmoothCheckBox = (SmoothCheckBox)child.findViewById(R.id.file_smooth_checkbox);
-        mSmoothCheckBox.setOnCheckedChangeListener(new SmoothCheckBox.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(SmoothCheckBox checkBox, boolean isChecked) {
-                Log.d("SmoothCheckBox", String.valueOf(isChecked));
-            }
-        });*/
     }
+
 
 
     @Override
@@ -269,12 +261,14 @@ public class MainActivity extends AppCompatActivity
             public void setUser(UserInfo userInfo) {
                 uid =userInfo.id;
                 Log.e("adsdsadsad",userInfo.id);
+
                 nickName= userInfo.nickName;
                 userInfoNickName.setText(nickName);
                 userInfoUsername.setText(userInfo.userName);
                 mEasyRefreshLayout.refreshComplete();
-                initFileListView(userInfo.id,"0");
                 userSharedHelper.save(username,userInfo.passWord,userInfo.id,userInfo.phone,userInfo.nickName);
+                initFileListView(uid,String.valueOf(fid));
+
             }
         });
 
@@ -382,9 +376,10 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onSuccess(Response<String> response) {
                 JsonArray filesList = analysisJson(response);
-                getFilesList(filesList);
-                FileAdapter fileAdapter = new FileAdapter(R.layout.file_list_main,getFilesList(filesList));
+                fileLists = getFilesList(filesList);
+                fileAdapter = new FileAdapter(R.layout.file_list_main,fileLists);
                 mRecyclerView.setAdapter(fileAdapter);
+                fileAdapterClick();
             }
         });
     }
@@ -479,19 +474,24 @@ public class MainActivity extends AppCompatActivity
 
     }
 
-    public void adapterClick(){
-        adapter.setOnItemChildClickListener(new BaseQuickAdapter.OnItemChildClickListener() {
+
+    private void fileAdapterClick() {
+        fileAdapter.setOnItemClickListener(new BaseQuickAdapter.OnItemClickListener() {
             @Override
-            public void onItemChildClick(BaseQuickAdapter adapter, View view, int position) {
-                Log.e("jhfsdlkksh","onItemClick" + position);
+            public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
+
+                Toast.makeText(MainActivity.this, "onItemClick" +fileLists.get(position).filetype, Toast.LENGTH_SHORT).show();
+                Toast.makeText(MainActivity.this, "onItemClick" +fileLists.get(position).filepath, Toast.LENGTH_SHORT).show();
             }
         });
-        adapter.setOnItemLongClickListener(new BaseQuickAdapter.OnItemLongClickListener() {
+        fileAdapter.setOnItemLongClickListener(new BaseQuickAdapter.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(BaseQuickAdapter adapter, View view, int position) {
-                Log.e("jhfsdlkksh","onItemClick" + position);
-                return false;
+                Toast.makeText(MainActivity.this, "onItemLongClick" + position, Toast.LENGTH_SHORT).show();
+                return true;
             }
         });
     }
+
+
 }

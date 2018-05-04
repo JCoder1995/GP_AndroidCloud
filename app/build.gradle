@@ -63,5 +63,8 @@ dependencies {
     //Butter Knife
     implementation 'com.jakewharton:butterknife:8.8.1'
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.8.1'
+    //文件在线预览
+    compile 'es.voghdev.pdfviewpager:library:1.0.3'
+
 
 }
