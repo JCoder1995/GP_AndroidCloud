@@ -35,14 +35,6 @@
         <PreferenceScreen
             android:key="wipe_cache"
             android:title="清空缓存"></PreferenceScreen>
-
-        <PreferenceScreen
-            android:key="wipe_cache"
-            android:title="清除默认打开方式"></PreferenceScreen>
-
-        <PreferenceScreen
-            android:key="view_the_task_list"
-            android:title="查看任务列表"></PreferenceScreen>
     </PreferenceCategory>
     <!-- 单独一个复选框 -->
     <PreferenceCategory android:title="关于">

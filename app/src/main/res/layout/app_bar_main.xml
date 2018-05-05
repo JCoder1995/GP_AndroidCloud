@@ -24,7 +24,7 @@
 
     <include layout="@layout/content_main" />
     <LinearLayout
-        android:visibility="gone"
+        android:visibility="invisible"
         android:id="@+id/popLayout"
         android:background="#FFFFFF"
         android:layout_gravity="bottom"
@@ -33,6 +33,7 @@
         android:layout_height="?attr/actionBarSize">
 
         <LinearLayout
+            android:id="@+id/download"
             android:orientation="vertical"
             android:gravity="center"
             android:layout_weight="1"
@@ -51,6 +52,7 @@
                 android:layout_height="match_parent" />
         </LinearLayout>
         <LinearLayout
+            android:id="@+id/copy"
             android:orientation="vertical"
             android:gravity="center"
             android:layout_weight="1"
@@ -68,6 +70,7 @@
         </LinearLayout>
 
         <LinearLayout
+            android:id="@+id/move"
             android:orientation="vertical"
             android:gravity="center"
             android:layout_weight="1"
@@ -86,6 +89,7 @@
         </LinearLayout>
 
         <LinearLayout
+            android:id="@+id/delete"
             android:orientation="vertical"
             android:gravity="center"
             android:layout_weight="1"
@@ -99,6 +103,24 @@
             <TextView
                 android:gravity="center"
                 android:text="删除"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent" />
+        </LinearLayout>
+        <LinearLayout
+            android:id="@+id/cancel"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:layout_weight="1"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent">
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_priority_high_black_24dp"
+                />
+            <TextView
+                android:gravity="center"
+                android:text="取消"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent" />
         </LinearLayout>

@@ -39,6 +39,7 @@ public class UploadActivity extends BaseActivity implements XExecutor.OnAllTaskE
     private int fid;
 
     private List<String> fileListName;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -57,6 +58,11 @@ public class UploadActivity extends BaseActivity implements XExecutor.OnAllTaskE
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+    }
+
+    @Override
     protected void onDestroy() {
         super.onDestroy();
         okUpload.removeOnAllTaskEndListener(this);
@@ -65,6 +71,7 @@ public class UploadActivity extends BaseActivity implements XExecutor.OnAllTaskE
 
     @Override
     public void onAllTaskEnd() {
+
         showToast("所有任务已经上传完成");
     }
 
@@ -73,7 +80,7 @@ public class UploadActivity extends BaseActivity implements XExecutor.OnAllTaskE
 
         Intent intent = getIntent();
         Bundle args = intent.getBundleExtra("uploadPhoto");
-        Bundle args1 = intent.getBundleExtra("uploadPhoto");
+        Bundle args1 = intent.getBundleExtra("uploadDoc");
         fileListName = new ArrayList<String>();
 
         uid =intent.getStringExtra("uid");
@@ -81,11 +88,18 @@ public class UploadActivity extends BaseActivity implements XExecutor.OnAllTaskE
         Log.e("wqewrgsdg",fidFromActivity);
         fid =Integer.parseInt(fidFromActivity);
         Log.e("wqewrgsdg",String.valueOf(fid));
+        ArrayList<String> uploadPhoto = new   ArrayList<String> ();
+        ArrayList<String> uploadDoc = new   ArrayList<String> ();
+        if (args!=null){
+            uploadPhoto = (ArrayList<String>) args.getSerializable("uploadPhoto");
+        }
+        if (args1!=null){
+            uploadDoc = (ArrayList<String>) args1.getSerializable("uploadDoc");
+        }
+        Log.e("12345",uploadDoc.toString());
 
-        ArrayList<String> uploadPhoto = (ArrayList<String>) args.getSerializable("uploadPhoto");
-        ArrayList<String> uploadDoc = (ArrayList<String>) args1.getSerializable("uploadPhoto");
 
-        if (uploadPhoto!=null){
+        if (uploadPhoto.size()!=0){
             List<FileTranSport> fileTranSports = new ArrayList<>();
             for (int i =0;i<uploadPhoto.size();i++){
                 File file = new File(uploadPhoto.get(i));
@@ -97,10 +111,25 @@ public class UploadActivity extends BaseActivity implements XExecutor.OnAllTaskE
                 fileTranSport.setType(6);
                 fileTranSports.add(fileTranSport);
             }
-            Log.e("sadsadsadas",fileListName.toString());
-
             tasks = adapter.updateData(fileTranSports,uid,fid,fileListName);
+            Log.e("sadsadsadas",fileListName.toString());
         }
+        if (uploadDoc.size()!=0){
+            List<FileTranSport> fileTranSports = new ArrayList<>();
+            for (int i =0;i<uploadDoc.size();i++){
+                File file = new File(uploadDoc.get(i));
+                FileTranSport fileTranSport = new FileTranSport();
+                fileListName.add(file.getName());
+                fileTranSport.setName(file.getName());
+                fileTranSport.setUrl(file.getAbsolutePath());
+                fileTranSport.setSize(file.length());
+                fileTranSport.setType(6);
+                fileTranSports.add(fileTranSport);
+            }
+            tasks = adapter.updateData(fileTranSports,uid,fid,fileListName);
+            Log.e("sadsadsadas",fileListName.toString());
+        }
+
         else {
             // showToast("没有数据");
         }
@@ -109,7 +138,7 @@ public class UploadActivity extends BaseActivity implements XExecutor.OnAllTaskE
     @OnClick(R.id.upload_begin)
     public void upload_begin(View view){
         if (tasks == null) {
-            showToast("请先选择图片");
+            showToast("请先选择文件");
             return;
         }
         for (UploadTask<?> task : tasks) {

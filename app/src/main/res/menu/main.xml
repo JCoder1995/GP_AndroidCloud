@@ -49,9 +49,11 @@
             <item android:title="上传文档"
                 android:id="@+id/menu_upload_doc"
                 app:showAsAction="ifRoom" />
+            <!--
             <item android:title="上传音视频"
-                android:id="@+id/menu_upload_video"
-                app:showAsAction="ifRoom" />
+            android:id="@+id/menu_upload_video"
+            app:showAsAction="ifRoom" />
+            -->
 
         </menu>
     </item>

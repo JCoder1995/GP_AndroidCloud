@@ -48,9 +48,9 @@
         android:layout_height="wrap_content"
         android:layout_alignTop="@+id/file_iv"
         android:layout_toEndOf="@+id/file_iv"
-        android:layout_toLeftOf="@+id/checkbox"
+        android:layout_toLeftOf="@+id/file_smooth_checkbox"
         android:layout_toRightOf="@+id/file_iv"
-        android:layout_toStartOf="@+id/checkbox"
+        android:layout_toStartOf="@+id/file_smooth_checkbox"
         android:ellipsize="end"
         android:maxLines="1"
         android:textColor="@android:color/black"
@@ -78,9 +78,9 @@
 
 
 
-    <droidninja.filepicker.views.SmoothCheckBox
+    <CheckBox
         android:id="@+id/file_smooth_checkbox"
-        android:layout_width="@dimen/file_item_checkbox_size"
+        android:layout_width="28dp"
         android:layout_height="@dimen/file_item_checkbox_size"
         android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"

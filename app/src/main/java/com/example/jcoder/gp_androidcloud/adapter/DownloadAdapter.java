@@ -1,18 +1,4 @@
-/*
- * Copyright 2016 jeasonlzy(廖子尧)
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+
 package com.example.jcoder.gp_androidcloud.adapter;
 
 import android.content.Context;
@@ -28,6 +14,7 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.example.jcoder.gp_androidcloud.R;
+import com.example.jcoder.gp_androidcloud.bean.FileList;
 import com.example.jcoder.gp_androidcloud.listener.LogDownloadListener;
 import com.example.jcoder.gp_androidcloud.model.FileTranSport;
 import com.example.jcoder.gp_androidcloud.ui.NumberProgressBar;
@@ -46,15 +33,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-/**
- * ================================================
- * 作    者：jeasonlzy（廖子尧）Github地址：https://github.com/jeasonlzy
- * 版    本：1.0
- * 创建日期：2017/6/5
- * 描    述：
- * 修订历史：
- * ================================================
- */
+
 public class DownloadAdapter extends RecyclerView.Adapter<DownloadAdapter.ViewHolder> {
 
     public static final int TYPE_ALL = 0;
@@ -149,12 +128,12 @@ public class DownloadAdapter extends RecyclerView.Adapter<DownloadAdapter.ViewHo
 
         public void bind() {
             Progress progress = task.progress;
-            FileTranSport fileTranSport = (FileTranSport) progress.extra1;
-            if (fileTranSport != null) {
+            FileList fileList = (FileList) progress.extra1;
+            if (fileList != null) {
                 //这里判断下载文件的图片
              //   Glide.with(context).load(apk.iconUrl).error(R.mipmap.ic_launcher).into(icon);
-                Glide.with(context).load(R.mipmap.ic_launcher).into(icon);
-                name.setText(fileTranSport.name);
+            //    Glide.with(context).load(null).into(icon);
+                name.setText(fileList.name);
                 priority.setText(String.format("优先级：%s", progress.priority));
             } else {
                 name.setText(progress.fileName);

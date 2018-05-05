@@ -197,7 +197,7 @@ public class UploadAdapter extends RecyclerView.Adapter<UploadAdapter.ViewHolder
             Progress progress = task.progress;
             FileTranSport item = (FileTranSport) progress.extra1;
             if (item.type==6){
-                Glide.with(context).load(item.url).into(icon);
+                Glide.with(context).load(item.url).error(null).into(icon);
             }
             else {
                 Glide.with(context).load(R.mipmap.ic_launcher).into(icon);

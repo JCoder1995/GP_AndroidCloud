@@ -1,24 +1,32 @@
 package com.example.jcoder.gp_androidcloud.activity;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -31,10 +39,13 @@ import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.example.jcoder.gp_androidcloud.R;
 import com.example.jcoder.gp_androidcloud.Task.UserTask;
 import com.example.jcoder.gp_androidcloud.adapter.FileAdapter;
+import com.example.jcoder.gp_androidcloud.base.DividerItemDecoration;
 import com.example.jcoder.gp_androidcloud.bean.FileList;
 import com.example.jcoder.gp_androidcloud.bean.UserInfo;
 import com.example.jcoder.gp_androidcloud.callbck.JsonCallback;
+import com.example.jcoder.gp_androidcloud.listener.LogDownloadListener;
 import com.example.jcoder.gp_androidcloud.net.OkUtil;
+import com.example.jcoder.gp_androidcloud.utility.SmoothCheckBox;
 import com.example.jcoder.gp_androidcloud.utility.UserSharedHelper;
 
 import com.google.gson.Gson;
@@ -42,25 +53,38 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.lzy.okgo.OkGo;
+import com.lzy.okgo.db.DownloadManager;
+import com.lzy.okgo.model.Progress;
 import com.lzy.okgo.model.Response;
+import com.lzy.okgo.request.GetRequest;
+import com.lzy.okgo.request.PostRequest;
+import com.lzy.okserver.OkDownload;
+import com.lzy.okserver.task.XExecutor;
 
+import java.io.File;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
 import droidninja.filepicker.FilePickerBuilder;
 import droidninja.filepicker.FilePickerConst;
 import droidninja.filepicker.models.sort.SortingTypes;
 import droidninja.filepicker.utils.Orientation;
-import droidninja.filepicker.views.SmoothCheckBox;
+
 import pub.devrel.easypermissions.EasyPermissions;
 
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+        implements NavigationView.OnNavigationItemSelectedListener, XExecutor.OnAllTaskEndListener {
     private Button uploadPhoto;
+    //下载返回码
+    private static final int REQUEST_PERMISSION_STORAGE = 0x01;
 
     // 再点一次退出程序时间设置
     private static final long WAIT_TIME = 2000L;
@@ -112,14 +136,32 @@ public class MainActivity extends AppCompatActivity
     private FileAdapter fileAdapter;
     ArrayList<FileList> fileLists = new ArrayList<FileList>();
 
-    private List<HashMap<String,Object>> list = new ArrayList<HashMap<String,Object>>();
-    private List<String> listStr = new ArrayList<String>();
+    //文件多选
+    private CheckBox smoothCheckBox;
+
+    private ArrayList<FileList> fileListsDownload = new ArrayList<FileList>();
+
+    @BindView(R.id.download)
+    LinearLayout linearLayout_downLoad;
+    @BindView(R.id.move)
+    LinearLayout linearLayout_move;
+    @BindView(R.id.copy)
+    LinearLayout linearLayout_copy;
+    @BindView(R.id.delete)
+    LinearLayout linearLayout_delete;
+    @BindView(R.id.cancel)
+    LinearLayout linearLayout_cancel;
+
 
     @SuppressLint("ResourceAsColor")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        ButterKnife.bind(this);
+        //获取多选
+        smoothCheckBox = (CheckBox) LayoutInflater.from(MainActivity.this).inflate(R.layout.file_list_main,null).findViewById(R.id.file_smooth_checkbox);
+
         fileSystem.add(0);
         //获取SharedPreferences
         mContext = getApplicationContext();
@@ -155,9 +197,8 @@ public class MainActivity extends AppCompatActivity
         //初始化RecyclerView
         initRecyclerView();
         setTitle("我的网盘");
-
+        downLoadFileList();
     }
-
 
 
     @Override
@@ -201,16 +242,12 @@ public class MainActivity extends AppCompatActivity
          if (id ==R.id.menu_upload_doc) {
              pickDocClicked();
          }
-         else if (id == R.id.menu_upload_video){
 
-         }
          else if (id == R.id.menu_upload_photo){
              pickPhotoClicked();
          }
-         else if (id == R.id.menu_upload_video){
-
-
-         }
+        /* else if (id == R.id.menu_upload_video){
+         }*/
         return super.onOptionsItemSelected(item);
     }
 
@@ -367,7 +404,6 @@ public class MainActivity extends AppCompatActivity
     private void initRecyclerView(){
         mRecyclerView = (RecyclerView)findViewById(R.id.main_recycler);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-
     }
 
     //第一次加载文件 默认根目录
@@ -375,11 +411,13 @@ public class MainActivity extends AppCompatActivity
         OkUtil.postFileList(uid, parent, new JsonCallback<String>() {
             @Override
             public void onSuccess(Response<String> response) {
+
                 JsonArray filesList = analysisJson(response);
                 fileLists = getFilesList(filesList);
                 fileAdapter = new FileAdapter(R.layout.file_list_main,fileLists);
                 mRecyclerView.setAdapter(fileAdapter);
                 fileAdapterClick();
+                mEasyRefreshLayout.refreshComplete();
             }
         });
     }
@@ -433,7 +471,8 @@ public class MainActivity extends AppCompatActivity
             }
             @Override
             public void onRefreshing() {
-
+            Log.e("MainActivity","onRefreshing");
+            refreshList();
             }
         });
     }
@@ -470,17 +509,18 @@ public class MainActivity extends AppCompatActivity
         startActivity(intent);
     }
 
+    //文件更新
     public void refreshList(){
-
+        initFileListView(uid,String.valueOf(fid));
     }
 
-
     private void fileAdapterClick() {
+
         fileAdapter.setOnItemClickListener(new BaseQuickAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
-
-                Toast.makeText(MainActivity.this, "onItemClick" +fileLists.get(position).filetype, Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(MainActivity.this,WebActivity.class);
+                startActivity(intent);
                 Toast.makeText(MainActivity.this, "onItemClick" +fileLists.get(position).filepath, Toast.LENGTH_SHORT).show();
             }
         });
@@ -491,7 +531,117 @@ public class MainActivity extends AppCompatActivity
                 return true;
             }
         });
+        fileAdapter.setOnItemChildClickListener(new BaseQuickAdapter.OnItemChildClickListener() {
+            @Override
+            public void onItemChildClick(BaseQuickAdapter adapter, View view, int position) {
+                popLayout.setVisibility(View.VISIBLE);
+                boolean isExistence =true;
+                Log.e("1212","click"+position);
+                if (fileListsDownload.size()==0){
+                    Log.e("1212","first_add"+((FileList) adapter.getItem(position)).name);
+                    fileListsDownload.add((FileList) adapter.getItem(position));
+                }
+                else {
+                    for (int i =0;i< fileListsDownload.size();i++){
+                        if ( fileListsDownload.get(i).name.equals(((FileList) adapter.getItem(position)).name)){
+                            Log.e("1212","remove"+((FileList) adapter.getItem(position)).name);
+                            fileListsDownload.remove(i);
+                            if (fileListsDownload.size()==0)popLayout.setVisibility(View.INVISIBLE);
+                            isExistence =true;
+                            break;
+                        }
+                        else{
+                            isExistence=false;
+                        }
+                    }
+                    if (isExistence==false){
+                        Log.e("1212","add"+((FileList) adapter.getItem(position)).name);
+                        fileListsDownload.add((FileList) adapter.getItem(position));
+                    }
+                }
+                Log.e("1212","fileListsDownloadSize="+fileListsDownload.size());
+            }
+        });
+        fileAdapter.setOnItemChildLongClickListener(new BaseQuickAdapter.OnItemChildLongClickListener() {
+            @Override
+            public boolean onItemChildLongClick(BaseQuickAdapter adapter, View view, int position) {
+                Toast.makeText(MainActivity.this, "onItemChildLongClick" +fileLists.get(position).filetype, Toast.LENGTH_SHORT).show();
+                return false;
+            }
+        });
+        smoothCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                Log.e("123","4"+smoothCheckBox.isChecked());
+            }
+        });
     }
 
+    @OnClick(R.id.cancel)
+    public void cancel(){
+        popLayout.setVisibility(View.INVISIBLE);
+        fileListsDownload.clear();
+        refreshList();
+    }
+    @OnClick(R.id.download)
+    public void download(View view){
+        for (FileList fileList :fileListsDownload){
+            //这里只是演示，表示请求可以传参，怎么传都行，和okgo使用方法一样
+            //这里第一个参数是tag，代表下载任务的唯一标识，传任意字符串都行，需要保证唯一,我这里用url作为了tag
+            //这里只是演示，表示请求可以传参，怎么传都行，和okgo使用方法一样
+            PostRequest<File> request = OkGo.<File>post(fileList.filepath);
 
+            OkDownload.request(fileList.filepath, request)//
+                    .priority(fileList.priority)//
+                    .extra1(fileList)//
+                    .save()//
+                    .register(new LogDownloadListener())//
+                    .start();
+        }
+        Toast.makeText(this,"已加入下载队列中",Toast.LENGTH_SHORT).show();
+        refreshList();
+    }
+    @OnClick(R.id.copy)
+    public void copy(){}
+    @OnClick(R.id.move)
+    public void move(){}
+    @OnClick(R.id.delete)
+    public void delete(){
+    }
+
+    private void downLoadFileList() {
+        //设置默认下载路径
+        OkDownload.getInstance().setFolder(Environment.getExternalStorageDirectory().getAbsolutePath() + "/download/");
+        //设置同时瞎子啊个数
+        OkDownload.getInstance().getThreadPool().setCorePoolSize(3);
+        //从数据库中恢复数据
+        List<Progress> progressList = DownloadManager.getInstance().getAll();
+        OkDownload.restore(progressList);
+        checkSDCardPermission();
+    }
+
+    /** 检查SD卡权限 */
+    protected void checkSDCardPermission() {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQUEST_PERMISSION_STORAGE);
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == REQUEST_PERMISSION_STORAGE) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                //获取权限
+            } else {
+                Toast.makeText(this,"权限被禁止，无法下载文件！",Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
+    @Override
+    public void onAllTaskEnd() {
+        Toast.makeText(this,"所有下载任务已结束",Toast.LENGTH_SHORT).show();
+    }
 }

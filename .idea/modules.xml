@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/GP_AndroidCloud.iml" filepath="$PROJECT_DIR$/GP_AndroidCloud.iml" />
+      <module fileurl="file://$PROJECT_DIR$/X5WebDemo/X5WebDemo.iml" filepath="$PROJECT_DIR$/X5WebDemo/X5WebDemo.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
     </modules>
   </component>
