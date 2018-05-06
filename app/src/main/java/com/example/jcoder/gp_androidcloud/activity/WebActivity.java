@@ -29,16 +29,18 @@ public class WebActivity extends AppCompatActivity implements ReaderCallback {
     private DownloadManager mDownloadManager;
     private long mRequestId;
     private DownloadObserver mDownloadObserver;
-    private String mFileUrl = "http://192.168.179.64:8080/GP_BackStage/upload/装配一车间温湿度记录表.pdf";
+    private String mFileUrl ;
     private String mFileName;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_web);
+        mFileUrl = getIntent().getExtras().getString("FilePath");
 
         mTbsReaderView = new TbsReaderView(this, this);
         mDownloadBtn = (Button) findViewById(R.id.btn_download);
+
         RelativeLayout rootRl = (RelativeLayout) findViewById(R.id.rl_root);
         rootRl.addView(mTbsReaderView, new RelativeLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
 
@@ -46,6 +48,7 @@ public class WebActivity extends AppCompatActivity implements ReaderCallback {
         if (isLocalExist()) {
             mDownloadBtn.setText("打开文件");
         }
+        mDownloadBtn.performClick();
     }
 
     public void onClickDownload(View v) {

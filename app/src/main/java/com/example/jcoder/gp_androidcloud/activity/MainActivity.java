@@ -3,7 +3,10 @@ package com.example.jcoder.gp_androidcloud.activity;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
@@ -35,6 +38,7 @@ import android.widget.Toast;
 
 import com.ajguan.library.EasyRefreshLayout;
 import com.ajguan.library.LoadModel;
+import com.bumptech.glide.Glide;
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.example.jcoder.gp_androidcloud.R;
 import com.example.jcoder.gp_androidcloud.Task.UserTask;
@@ -134,7 +138,7 @@ public class MainActivity extends AppCompatActivity
 
     //文件adapter
     private FileAdapter fileAdapter;
-    ArrayList<FileList> fileLists = new ArrayList<FileList>();
+    private ArrayList<FileList> fileLists = new ArrayList<FileList>();
 
     //文件多选
     private CheckBox smoothCheckBox;
@@ -152,7 +156,6 @@ public class MainActivity extends AppCompatActivity
     @BindView(R.id.cancel)
     LinearLayout linearLayout_cancel;
 
-
     @SuppressLint("ResourceAsColor")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -161,6 +164,8 @@ public class MainActivity extends AppCompatActivity
         ButterKnife.bind(this);
         //获取多选
         smoothCheckBox = (CheckBox) LayoutInflater.from(MainActivity.this).inflate(R.layout.file_list_main,null).findViewById(R.id.file_smooth_checkbox);
+
+      //  imageView = (ImageView) LayoutInflater.from(MainActivity.this).inflate(R.layout.photopreview,null).findViewById(R.id.photoView);
 
         fileSystem.add(0);
         //获取SharedPreferences
@@ -209,19 +214,26 @@ public class MainActivity extends AppCompatActivity
     //监听返回键 如果导航栏在开启状态 自动回退导航栏
     @Override
     public void onBackPressed() {
-        DrawerLayout drawer = findViewById(R.id.drawer_layout);
-        if (drawer.isDrawerOpen(GravityCompat.START)) {
+        if (fileSystem.size()>1){
+            fid =fileSystem.get(fileSystem.size()-2);
+            refreshList();
+            fileSystem.remove(fileSystem.size()-1);
+        }
+        else {
+            DrawerLayout drawer = findViewById(R.id.drawer_layout);
+            if (drawer.isDrawerOpen(GravityCompat.START)) {
 
-            drawer.closeDrawer(GravityCompat.START);
-        } else {
-            if (System.currentTimeMillis() - TOUCH_TIME < WAIT_TIME) {
-                finish();
+                drawer.closeDrawer(GravityCompat.START);
             } else {
-                TOUCH_TIME = System.currentTimeMillis();
-                Toast.makeText(this, R.string.press_again_exit, Toast.LENGTH_SHORT).show();
+                if (System.currentTimeMillis() - TOUCH_TIME < WAIT_TIME) {
+                    finish();
+                } else {
+                    TOUCH_TIME = System.currentTimeMillis();
+                    Toast.makeText(this, R.string.press_again_exit, Toast.LENGTH_SHORT).show();
+                }
             }
         }
-    }
+        }
 
     //加载Menu
     @Override
@@ -258,12 +270,9 @@ public class MainActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.nav_folder) {
-
-        } else if (id == R.id.nav_collection) {
-
-        } else if (id == R.id.nav_upload) {
-
+        if (id == R.id.nav_upload) {
+            Intent intent = new Intent(MainActivity.this,UploadActivity.class);
+            startActivity(intent);
         } else if (id == R.id.nav_download){
             Intent intent = new Intent(MainActivity.this,DownLoadActivity.class);
             startActivity(intent);
@@ -296,9 +305,10 @@ public class MainActivity extends AppCompatActivity
         userTask.setUserInfoCallBack(new UserTask.UserCallBack() {
             @Override
             public void setUser(UserInfo userInfo) {
-                uid =userInfo.id;
-                Log.e("adsdsadsad",userInfo.id);
 
+
+                //Bug 修复
+                uid =userInfo.id;
                 nickName= userInfo.nickName;
                 userInfoNickName.setText(nickName);
                 userInfoUsername.setText(userInfo.userName);
@@ -508,9 +518,21 @@ public class MainActivity extends AppCompatActivity
         intent.putExtra("fid",fid+"");
         startActivity(intent);
     }
+    public void intentFileOperationActivity(ArrayList<FileList> FileListOperation ,String uid,int fid,String type){
+        Intent intent = new Intent(MainActivity.this,FileOperationActivity.class);
+        Bundle bundle = new Bundle();
+        bundle.putSerializable("FileOpera",(Serializable)FileListOperation);
+        intent.putExtra("FileOpera",bundle);
+        intent.putExtra("uid",uid);
+        intent.putExtra("fid",fid+"");
+        intent.putExtra("type",type);
+        startActivity(intent);
+    }
 
     //文件更新
     public void refreshList(){
+        fileSystem.clear();
+        popLayout.setVisibility(View.INVISIBLE);
         initFileListView(uid,String.valueOf(fid));
     }
 
@@ -519,15 +541,30 @@ public class MainActivity extends AppCompatActivity
         fileAdapter.setOnItemClickListener(new BaseQuickAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
-                Intent intent = new Intent(MainActivity.this,WebActivity.class);
-                startActivity(intent);
+                //这里处理点击事件
+                switch (((FileList) adapter.getItem(position)).filetype){
+                    case 0:
+                        fid = ((FileList) adapter.getItem(position)).fid;
+                        fileSystem.add(fid);
+                        refreshList();
+                        break;
+                    case 6:
+                        photoPreview(((FileList) adapter.getItem(position)).name,((FileList) adapter.getItem(position)).filepath);
+                        //加载图片
+                        break;
+                    default:
+                        Intent intent = new Intent(MainActivity.this,WebActivity.class);
+                        intent.putExtra("FilePath",((FileList) adapter.getItem(position)).filepath);
+                        startActivity(intent);
+                }
                 Toast.makeText(MainActivity.this, "onItemClick" +fileLists.get(position).filepath, Toast.LENGTH_SHORT).show();
             }
         });
         fileAdapter.setOnItemLongClickListener(new BaseQuickAdapter.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(BaseQuickAdapter adapter, View view, int position) {
-                Toast.makeText(MainActivity.this, "onItemLongClick" + position, Toast.LENGTH_SHORT).show();
+              //
+                //  Toast.makeText(MainActivity.this, "onItemLongClick" + position, Toast.LENGTH_SHORT).show();
                 return true;
             }
         });
@@ -584,6 +621,7 @@ public class MainActivity extends AppCompatActivity
         fileListsDownload.clear();
         refreshList();
     }
+
     @OnClick(R.id.download)
     public void download(View view){
         for (FileList fileList :fileListsDownload){
@@ -600,14 +638,39 @@ public class MainActivity extends AppCompatActivity
                     .start();
         }
         Toast.makeText(this,"已加入下载队列中",Toast.LENGTH_SHORT).show();
+        popLayout.setVisibility(View.INVISIBLE);
+        fileListsDownload.clear();
         refreshList();
     }
+
     @OnClick(R.id.copy)
-    public void copy(){}
+    public void copy(){
+        intentFileOperationActivity(fileListsDownload,uid,fid,"copy");
+        fileListsDownload.clear();
+    }
+
     @OnClick(R.id.move)
-    public void move(){}
+    public void move(){
+        intentFileOperationActivity(fileListsDownload,uid,fid,"move");
+        fileListsDownload.clear();
+    }
+
     @OnClick(R.id.delete)
     public void delete(){
+        new AlertDialog.Builder(this)
+                .setTitle("确认删除吗")
+                .setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+
+                    }
+                })
+                .setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        //这里写向后台的删除方法
+                    }
+                }).create().show();
     }
 
     private void downLoadFileList() {
@@ -644,4 +707,20 @@ public class MainActivity extends AppCompatActivity
     public void onAllTaskEnd() {
         Toast.makeText(this,"所有下载任务已结束",Toast.LENGTH_SHORT).show();
     }
+
+    public void photoPreview(String FileName,String FilePath){
+
+       View view=(View)LayoutInflater.from(MainActivity.this).inflate(R.layout.photopreview,null);
+       ImageView imageView = (ImageView)view.findViewById(R.id.photoView);
+        Glide.with(MainActivity.this).load(FilePath).thumbnail( 0.2f ).into(imageView);
+        AlertDialog.Builder buidler = new AlertDialog.Builder(MainActivity.this);
+                buidler.setTitle(FileName)
+                        .setView(view)
+                        .setNegativeButton("关闭", new DialogInterface.OnClickListener() {
+                         @Override
+                          public void onClick(DialogInterface dialogInterface, int i) {
+                        }
+                       }).create().show();
+    }
+
 }

@@ -19,9 +19,6 @@
             <item android:title="按名称排序"
                 app:showAsAction="ifRoom" />
 
-            <item android:title="按文件大小排序"
-                app:showAsAction="ifRoom" />
-
             <item android:title="按修改时间排序"
                 app:showAsAction="ifRoom" />
 

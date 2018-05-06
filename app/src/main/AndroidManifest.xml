@@ -2,12 +2,9 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.jcoder.gp_androidcloud">
 
-
-    <uses-permission android:name="android.permission.DOWNLOAD_WITHOUT_NOTIFICATION"/>
-    <uses-permission android:name="android.permission.ACCESS_DOWNLOAD_MANAGER"/>
-    <uses-permission android:name="android.permission.WRITE_SETTINGS"/>
-
-
+    <uses-permission android:name="android.permission.DOWNLOAD_WITHOUT_NOTIFICATION" />
+    <uses-permission android:name="android.permission.ACCESS_DOWNLOAD_MANAGER" />
+    <uses-permission android:name="android.permission.WRITE_SETTINGS" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <!-- To auto-complete the email text field in the login form with the user's emails -->
@@ -62,8 +59,17 @@
         <activity
             android:name=".activity.UploadActivity"
             android:label="文件上传" />
-        <activity android:name=".activity.WebActivity">
-
+        <activity
+            android:name=".activity.WebActivity"
+            android:label="文件预览" />
+        <activity
+            android:name=".activity.FileOperationActivity"
+            android:label="@string/title_activity_file_operation"
+            android:parentActivityName=".activity.MainActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.example.jcoder.gp_androidcloud.activity.MainActivity" />
         </activity>
     </application>
 

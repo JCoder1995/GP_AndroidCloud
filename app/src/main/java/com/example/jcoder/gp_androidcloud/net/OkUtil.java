@@ -9,6 +9,7 @@ import com.example.jcoder.gp_androidcloud.callbck.JsonCallback;
 import com.lzy.okgo.OkGo;
 import com.lzy.okgo.callback.StringCallback;
 
+import java.util.ArrayList;
 import java.util.Map;
 
 
@@ -33,6 +34,7 @@ public class OkUtil {
     private static String userInfo = ip+"/user/getUser";
 
     private static String getFileList = ip+"/file/getFileList";
+    private static String getFileFolderList = ip+"/file/getFileFolderList";
 
     // 测试网络联通类
     public static void postRequest(JsonCallback<UserBean> callback) {
@@ -73,6 +75,22 @@ public class OkUtil {
         OkGo.<T>post(getFileList)
                 .params("uid",userName)
                 .params("fid",fileParent)
+                .execute(callback);
+    }
+    //获取用户信息
+    public static <T> void postFileFolderList(String userName,String fileParent, JsonCallback<T> callback){
+        Log.d("OkGoUtil", "获取用户文件");
+        OkGo.<T>post(getFileFolderList)
+                .params("uid",userName)
+                .params("fid",fileParent)
+                .execute(callback);
+    }
+    //获取用户信息
+    public static <T> void postFileChangeList(String fid,String file, JsonCallback<T> callback){
+        Log.d("OkGoUtil", "获取用户文件");
+        OkGo.<T>post(getFileFolderList)
+                .params("fid",fid)
+                .params("file",file)
                 .execute(callback);
     }
 
