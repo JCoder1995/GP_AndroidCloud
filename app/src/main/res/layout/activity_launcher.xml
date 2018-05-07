@@ -22,7 +22,7 @@
             android:src="@drawable/ic_cloud_queue_black_48dp"/>
         <TextView
             android:gravity="center"
-            android:text="欢迎使用效率云"
+            android:text="欢迎使用轻云"
             android:textSize="15sp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

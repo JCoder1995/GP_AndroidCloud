@@ -37,7 +37,7 @@ public class UserTask extends AsyncTask<Void,Void,UserInfo>{
             }
         });
         try {
-            Thread.sleep(2000);
+            Thread.sleep(1000);
             return userInfo;
         } catch (InterruptedException e) {
             e.printStackTrace();

@@ -7,6 +7,7 @@
         android:orderInCategory="100"
         android:title="@string/action_search"
         app:showAsAction="always" />
+<!--
 
     <item
         android:icon="@drawable/ic_sort_by_alpha_white_24dp"
@@ -19,15 +20,15 @@
             <item android:title="按名称排序"
                 app:showAsAction="ifRoom" />
 
-            <item android:title="按文件大小排序"
-                app:showAsAction="ifRoom" />
-
             <item android:title="按修改时间排序"
                 app:showAsAction="ifRoom" />
 
         </menu>
 
     </item>
+
+-->
+
 
     <item
         android:icon="@drawable/ic_file_upload_white_24dp"
@@ -49,9 +50,11 @@
             <item android:title="上传文档"
                 android:id="@+id/menu_upload_doc"
                 app:showAsAction="ifRoom" />
+            <!--
             <item android:title="上传音视频"
-                android:id="@+id/menu_upload_video"
-                app:showAsAction="ifRoom" />
+            android:id="@+id/menu_upload_video"
+            app:showAsAction="ifRoom" />
+            -->
 
         </menu>
     </item>

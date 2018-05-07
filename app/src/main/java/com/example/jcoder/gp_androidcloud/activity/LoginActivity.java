@@ -316,7 +316,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             @Override
             public void onSuccess(Response<UserBean> response) {
                 status[0] = response.body().code;
-                if ( status[0]== 0){
+                if ( status[0]== 2){
                     mContext = getApplicationContext();
                     userSharedHelper = new UserSharedHelper(mContext);
                     userSharedHelper.save(email,password);

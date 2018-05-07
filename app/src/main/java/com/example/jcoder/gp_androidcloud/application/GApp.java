@@ -1,7 +1,6 @@
-package com.example.jcoder.gp_androidcloud.util;
+package com.example.jcoder.gp_androidcloud.application;
 
 import android.app.Application;
-import android.content.Context;
 import android.util.Log;
 
 import com.lzy.okgo.OkGo;
@@ -9,17 +8,17 @@ import com.tencent.smtt.sdk.QbSdk;
 import com.tencent.smtt.sdk.TbsListener;
 
 /**
- * desc:
+ * Created by JCoder on 2018/4/26.
  */
 
-public class App extends Application {
-
-   public static Context mContext;
+public class GApp extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
         OkGo.getInstance().init(this);
-        mContext = this;
+
+
+
 
         // 搜集本地tbs内核信息并上报服务器，服务器返回结果决定使用哪个内核。
         // TbsDownloader.needDownload(getApplicationContext(), false);
@@ -56,11 +55,5 @@ public class App extends Application {
         });
 
         QbSdk.initX5Environment(getApplicationContext(), cb);
-
-    }
-
-
-    public static Context getContext() {
-        return mContext;
     }
 }

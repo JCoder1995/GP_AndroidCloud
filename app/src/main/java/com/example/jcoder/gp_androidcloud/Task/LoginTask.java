@@ -36,13 +36,16 @@ public class LoginTask extends AsyncTask<Void,Void,Boolean>{
         });
         try {
             Thread.sleep(2000);
-
             if ( status[0]== -1){
                 Log.e("response_status","-1");
                 return false;
             }
 
             else if (status[0] == 0){
+                Log.e("response_status","0");
+                return false;
+            }
+            else if (status[0] == 2){
                 Log.e("response_status","0");
                 return true;
             }
