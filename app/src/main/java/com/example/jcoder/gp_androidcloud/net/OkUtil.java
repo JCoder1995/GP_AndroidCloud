@@ -35,6 +35,10 @@ public class OkUtil {
 
     private static String getFileList = ip+"/file/getFileList";
     private static String getFileFolderList = ip+"/file/getFileFolderList";
+    private static String postFileChangeList = ip+"/file/postFileChangeList";
+    private static String searchFileList = ip+"/file/searchFileList";
+    private static String AddFolder = ip+"/file/AddFolder";
+
 
     // 测试网络联通类
     public static void postRequest(JsonCallback<UserBean> callback) {
@@ -77,7 +81,15 @@ public class OkUtil {
                 .params("fid",fileParent)
                 .execute(callback);
     }
-    //获取用户信息
+    //查找文件信息
+    public static <T> void searchFileList(String userName,String fileParent, JsonCallback<T> callback){
+        Log.d("OkGoUtil", "查找用户文件");
+        OkGo.<T>post(searchFileList)
+                .params("uid",userName)
+                .params("query",fileParent)
+                .execute(callback);
+    }
+    //获取用户文件夹
     public static <T> void postFileFolderList(String userName,String fileParent, JsonCallback<T> callback){
         Log.d("OkGoUtil", "获取用户文件");
         OkGo.<T>post(getFileFolderList)
@@ -85,14 +97,24 @@ public class OkUtil {
                 .params("fid",fileParent)
                 .execute(callback);
     }
-    //获取用户信息
-    public static <T> void postFileChangeList(String fid,String file, JsonCallback<T> callback){
+    //
+    public static <T> void postFileChangeList(String fid,String file,String type, JsonCallback<T> callback){
         Log.d("OkGoUtil", "获取用户文件");
-        OkGo.<T>post(getFileFolderList)
+        OkGo.<T>post(postFileChangeList)
                 .params("fid",fid)
                 .params("file",file)
+                .params("type",type)
                 .execute(callback);
     }
+    public static <T> void AddFolder(String uid,String fid,String name, JsonCallback<T> callback){
+        Log.d("OkGoUtil", "新建文件夹");
+        OkGo.<T>post(AddFolder)
+                .params("uid",uid)
+                .params("fid",fid)
+                .params("name",name)
+                .execute(callback);
+    }
+
 
 
 }

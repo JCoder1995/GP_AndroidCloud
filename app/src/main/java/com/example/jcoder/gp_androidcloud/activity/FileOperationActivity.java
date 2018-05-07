@@ -53,22 +53,32 @@ public class FileOperationActivity extends AppCompatActivity {
     private String mMoveOrCopy;
     //用户数据
     private ArrayList<Map<String,String>> file = new ArrayList<Map<String,String>>();
+    //用户json
+    private String json;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_file_operation);
         ButterKnife.bind(this);
-
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {
+            public void onClick(final View view) {
 
                 Snackbar.make(view, "正在操作", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
+                OkUtil.postFileChangeList(String.valueOf(fid), json, mMoveOrCopy, new JsonCallback<String>() {
+                    @Override
+                    public void onSuccess(Response<String> response) {
+                        Log.e("FileOperationActivity",response.body().toString());
+                        Snackbar.make(view, "操作成功", Snackbar.LENGTH_LONG)
+                                .setAction("Action", null).show();
+                        finish();
+                    }
+                });
 
             }
         });
@@ -140,11 +150,11 @@ public class FileOperationActivity extends AppCompatActivity {
 
         for (FileList fileList :FileOperation){
             Map<String , String> map = new HashMap<String, String>();
-                map.put(String.valueOf(fileList.uid),String.valueOf(fileList.fid));
+                map.put("fid",String.valueOf(fileList.fid));
                 file.add(map);
         }
         Gson gson = new Gson();
-        String json = gson.toJson(file);
+        json = gson.toJson(file);
         Log.e("FileOperationActivity",json);
     }
 

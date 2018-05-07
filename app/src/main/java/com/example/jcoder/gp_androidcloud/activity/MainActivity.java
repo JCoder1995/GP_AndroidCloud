@@ -30,6 +30,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -65,6 +66,7 @@ import com.lzy.okgo.request.GetRequest;
 import com.lzy.okgo.request.PostRequest;
 import com.lzy.okserver.OkDownload;
 import com.lzy.okserver.task.XExecutor;
+import com.miguelcatalan.materialsearchview.MaterialSearchView;
 
 import java.io.File;
 import java.io.Serializable;
@@ -145,6 +147,9 @@ public class MainActivity extends AppCompatActivity
 
     private ArrayList<FileList> fileListsDownload = new ArrayList<FileList>();
 
+    //用户数据
+    private ArrayList<Map<String,String>> file = new ArrayList<Map<String,String>>();
+
     @BindView(R.id.download)
     LinearLayout linearLayout_downLoad;
     @BindView(R.id.move)
@@ -155,6 +160,8 @@ public class MainActivity extends AppCompatActivity
     LinearLayout linearLayout_delete;
     @BindView(R.id.cancel)
     LinearLayout linearLayout_cancel;
+    @BindView(R.id.search_view)
+    MaterialSearchView searchView;
 
     @SuppressLint("ResourceAsColor")
     @Override
@@ -173,7 +180,7 @@ public class MainActivity extends AppCompatActivity
         userSharedHelper = new UserSharedHelper(mContext);
         //获取登陆用户
         mUsername = getIntentUserInfo();
-        getUserInfo(mUsername);
+
         //设置Toolbar
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -198,11 +205,55 @@ public class MainActivity extends AppCompatActivity
 
         //获取NavigationView header中的控件
         setNavHead(navigationView);
-
+        getUserInfo(mUsername);
         //初始化RecyclerView
         initRecyclerView();
         setTitle("我的网盘");
         downLoadFileList();
+        searchViewLinstener();
+    }
+
+    private void searchViewLinstener() {
+        searchView.setOnQueryTextListener(new MaterialSearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                //查找操作
+                searchInformation(uid,query);
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                //Do some magic
+                return false;
+            }
+        });
+
+        searchView.setOnSearchViewListener(new MaterialSearchView.SearchViewListener() {
+            @Override
+            public void onSearchViewShown() {
+                //Do some magic
+            }
+
+            @Override
+            public void onSearchViewClosed() {
+                //Do some magic
+            }
+        });
+    }
+    //用户查找信息
+    private void searchInformation(String uid, String query) {
+        OkUtil.searchFileList(uid, query, new JsonCallback<String>() {
+            @Override
+            public void onSuccess(Response<String> response) {
+                JsonArray filesList = analysisJson(response);
+                fileLists = getFilesList(filesList);
+                fileAdapter = new FileAdapter(R.layout.file_list_main,fileLists);
+                mRecyclerView.setAdapter(fileAdapter);
+                fileAdapterClick();
+                mEasyRefreshLayout.refreshComplete();
+            }
+        });
     }
 
 
@@ -240,6 +291,8 @@ public class MainActivity extends AppCompatActivity
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main, menu);
+        MenuItem item = menu.findItem(R.id.action_search);
+        searchView.setMenuItem(item);
         return true;
     }
 
@@ -251,12 +304,16 @@ public class MainActivity extends AppCompatActivity
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
+
          if (id ==R.id.menu_upload_doc) {
              pickDocClicked();
          }
 
          else if (id == R.id.menu_upload_photo){
              pickPhotoClicked();
+         }
+         else if (id ==R.id.menu_upload_folder){
+             addFolder();
          }
         /* else if (id == R.id.menu_upload_video){
          }*/
@@ -305,8 +362,6 @@ public class MainActivity extends AppCompatActivity
         userTask.setUserInfoCallBack(new UserTask.UserCallBack() {
             @Override
             public void setUser(UserInfo userInfo) {
-
-
                 //Bug 修复
                 uid =userInfo.id;
                 nickName= userInfo.nickName;
@@ -518,6 +573,7 @@ public class MainActivity extends AppCompatActivity
         intent.putExtra("fid",fid+"");
         startActivity(intent);
     }
+
     public void intentFileOperationActivity(ArrayList<FileList> FileListOperation ,String uid,int fid,String type){
         Intent intent = new Intent(MainActivity.this,FileOperationActivity.class);
         Bundle bundle = new Bundle();
@@ -531,7 +587,6 @@ public class MainActivity extends AppCompatActivity
 
     //文件更新
     public void refreshList(){
-        fileSystem.clear();
         popLayout.setVisibility(View.INVISIBLE);
         initFileListView(uid,String.valueOf(fid));
     }
@@ -539,8 +594,10 @@ public class MainActivity extends AppCompatActivity
     private void fileAdapterClick() {
 
         fileAdapter.setOnItemClickListener(new BaseQuickAdapter.OnItemClickListener() {
+
             @Override
             public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
+
                 //这里处理点击事件
                 switch (((FileList) adapter.getItem(position)).filetype){
                     case 0:
@@ -557,7 +614,7 @@ public class MainActivity extends AppCompatActivity
                         intent.putExtra("FilePath",((FileList) adapter.getItem(position)).filepath);
                         startActivity(intent);
                 }
-                Toast.makeText(MainActivity.this, "onItemClick" +fileLists.get(position).filepath, Toast.LENGTH_SHORT).show();
+
             }
         });
         fileAdapter.setOnItemLongClickListener(new BaseQuickAdapter.OnItemLongClickListener() {
@@ -565,6 +622,8 @@ public class MainActivity extends AppCompatActivity
             public boolean onItemLongClick(BaseQuickAdapter adapter, View view, int position) {
               //
                 //  Toast.makeText(MainActivity.this, "onItemLongClick" + position, Toast.LENGTH_SHORT).show();
+                fileListsDownload.add((FileList) adapter.getItem(position));
+                delete();
                 return true;
             }
         });
@@ -647,28 +706,47 @@ public class MainActivity extends AppCompatActivity
     public void copy(){
         intentFileOperationActivity(fileListsDownload,uid,fid,"copy");
         fileListsDownload.clear();
+        refreshList();
     }
 
     @OnClick(R.id.move)
     public void move(){
         intentFileOperationActivity(fileListsDownload,uid,fid,"move");
         fileListsDownload.clear();
+        refreshList();
     }
 
     @OnClick(R.id.delete)
     public void delete(){
+        final String json;
+        for (FileList fileList :fileListsDownload){
+            Map<String , String> map = new HashMap<String, String>();
+            map.put("fid",String.valueOf(fileList.fid));
+            file.add(map);
+        }
+        Gson gson = new Gson();
+        json = gson.toJson(file);
+
         new AlertDialog.Builder(this)
                 .setTitle("确认删除吗")
                 .setNegativeButton("取消", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
-
+                    refreshList();
                     }
                 })
                 .setPositiveButton("确定", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
-                        //这里写向后台的删除方法
+                        OkUtil.postFileChangeList(String.valueOf(fid), json, "delete", new JsonCallback<Object>() {
+                            @Override
+                            public void onSuccess(Response<Object> response) {
+                                Toast.makeText(MainActivity.this,"删除成功",Toast.LENGTH_SHORT).show();
+                                refreshList();
+                                fileListsDownload.clear();
+                            }
+                        });
+
                     }
                 }).create().show();
     }
@@ -721,6 +799,34 @@ public class MainActivity extends AppCompatActivity
                           public void onClick(DialogInterface dialogInterface, int i) {
                         }
                        }).create().show();
+    }
+
+    public void addFolder(){
+        final EditText editText = new EditText(this);
+        new AlertDialog.Builder(this)
+                .setTitle("新建文件夹")
+                .setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        refreshList();
+                    }
+                })
+                .setView(editText)
+                .setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        Log.e("MainActivity",editText.getText().toString());
+                        Log.e("MainActivity",uid);
+                        Log.e("MainActivity", String.valueOf(fid));
+                        OkUtil.AddFolder(uid, String.valueOf(fid), editText.getText().toString(), new JsonCallback<Object>() {
+                            @Override
+                            public void onSuccess(Response<Object> response) {
+                                refreshList();
+                            }
+                        });
+
+                    }
+                }).create().show();
     }
 
 }

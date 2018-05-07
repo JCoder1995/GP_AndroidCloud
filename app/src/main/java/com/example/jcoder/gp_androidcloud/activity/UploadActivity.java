@@ -81,58 +81,61 @@ public class UploadActivity extends BaseActivity implements XExecutor.OnAllTaskE
         Intent intent = getIntent();
         Bundle args = intent.getBundleExtra("uploadPhoto");
         Bundle args1 = intent.getBundleExtra("uploadDoc");
-        fileListName = new ArrayList<String>();
+        if (args!=null||args1!=null){
+            fileListName = new ArrayList<String>();
 
-        uid =intent.getStringExtra("uid");
-        String fidFromActivity=getIntent().getStringExtra("fid");
-        Log.e("wqewrgsdg",fidFromActivity);
-        fid =Integer.parseInt(fidFromActivity);
-        Log.e("wqewrgsdg",String.valueOf(fid));
-        ArrayList<String> uploadPhoto = new   ArrayList<String> ();
-        ArrayList<String> uploadDoc = new   ArrayList<String> ();
-        if (args!=null){
-            uploadPhoto = (ArrayList<String>) args.getSerializable("uploadPhoto");
-        }
-        if (args1!=null){
-            uploadDoc = (ArrayList<String>) args1.getSerializable("uploadDoc");
-        }
-        Log.e("12345",uploadDoc.toString());
-
-
-        if (uploadPhoto.size()!=0){
-            List<FileTranSport> fileTranSports = new ArrayList<>();
-            for (int i =0;i<uploadPhoto.size();i++){
-                File file = new File(uploadPhoto.get(i));
-                FileTranSport fileTranSport = new FileTranSport();
-                fileListName.add(file.getName());
-                fileTranSport.setName(file.getName());
-                fileTranSport.setUrl(file.getAbsolutePath());
-                fileTranSport.setSize(file.length());
-                fileTranSport.setType(6);
-                fileTranSports.add(fileTranSport);
+            uid =intent.getStringExtra("uid");
+            String fidFromActivity=getIntent().getStringExtra("fid");
+            Log.e("wqewrgsdg",fidFromActivity);
+            fid =Integer.parseInt(fidFromActivity);
+            Log.e("wqewrgsdg",String.valueOf(fid));
+            ArrayList<String> uploadPhoto = new   ArrayList<String> ();
+            ArrayList<String> uploadDoc = new   ArrayList<String> ();
+            if (args!=null){
+                uploadPhoto = (ArrayList<String>) args.getSerializable("uploadPhoto");
             }
-            tasks = adapter.updateData(fileTranSports,uid,fid,fileListName);
-            Log.e("sadsadsadas",fileListName.toString());
-        }
-        if (uploadDoc.size()!=0){
-            List<FileTranSport> fileTranSports = new ArrayList<>();
-            for (int i =0;i<uploadDoc.size();i++){
-                File file = new File(uploadDoc.get(i));
-                FileTranSport fileTranSport = new FileTranSport();
-                fileListName.add(file.getName());
-                fileTranSport.setName(file.getName());
-                fileTranSport.setUrl(file.getAbsolutePath());
-                fileTranSport.setSize(file.length());
-                fileTranSport.setType(6);
-                fileTranSports.add(fileTranSport);
+            if (args1!=null){
+                uploadDoc = (ArrayList<String>) args1.getSerializable("uploadDoc");
             }
-            tasks = adapter.updateData(fileTranSports,uid,fid,fileListName);
-            Log.e("sadsadsadas",fileListName.toString());
+            Log.e("12345",uploadDoc.toString());
+
+
+            if (uploadPhoto.size()!=0){
+                List<FileTranSport> fileTranSports = new ArrayList<>();
+                for (int i =0;i<uploadPhoto.size();i++){
+                    File file = new File(uploadPhoto.get(i));
+                    FileTranSport fileTranSport = new FileTranSport();
+                    fileListName.add(file.getName());
+                    fileTranSport.setName(file.getName());
+                    fileTranSport.setUrl(file.getAbsolutePath());
+                    fileTranSport.setSize(file.length());
+                    fileTranSport.setType(6);
+                    fileTranSports.add(fileTranSport);
+                }
+                tasks = adapter.updateData(fileTranSports,uid,fid,fileListName);
+                Log.e("sadsadsadas",fileListName.toString());
+            }
+            if (uploadDoc.size()!=0){
+                List<FileTranSport> fileTranSports = new ArrayList<>();
+                for (int i =0;i<uploadDoc.size();i++){
+                    File file = new File(uploadDoc.get(i));
+                    FileTranSport fileTranSport = new FileTranSport();
+                    fileListName.add(file.getName());
+                    fileTranSport.setName(file.getName());
+                    fileTranSport.setUrl(file.getAbsolutePath());
+                    fileTranSport.setSize(file.length());
+                    fileTranSport.setType(6);
+                    fileTranSports.add(fileTranSport);
+                }
+                tasks = adapter.updateData(fileTranSports,uid,fid,fileListName);
+                Log.e("sadsadsadas",fileListName.toString());
+            }
+
+            else {
+                // showToast("没有数据");
+            }
         }
 
-        else {
-            // showToast("没有数据");
-        }
     }
 
     @OnClick(R.id.upload_begin)
