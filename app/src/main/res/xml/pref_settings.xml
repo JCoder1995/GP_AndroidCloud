@@ -4,8 +4,10 @@
     <PreferenceCategory android:title="账户信息">
 
         <PreferenceScreen
+            android:key="setting_username"
             android:summary="276759659@qq.com"
-            android:title="邮箱地址"></PreferenceScreen>
+            android:title="邮箱地址">
+        </PreferenceScreen>
 
         <PreferenceScreen android:title="修改密码">
 
@@ -36,18 +38,12 @@
             android:key="wipe_cache"
             android:title="清空缓存"></PreferenceScreen>
     </PreferenceCategory>
-    <!-- 单独一个复选框 -->
+
     <PreferenceCategory android:title="关于">
     </PreferenceCategory>
         <PreferenceScreen
             android:summary="0.1"
             android:title="版本信息"></PreferenceScreen>
         <PreferenceScreen
-
             android:title="报告错误"></PreferenceScreen>
-
-
-
-
-
 </PreferenceScreen>

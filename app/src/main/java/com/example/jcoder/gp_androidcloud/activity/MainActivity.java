@@ -172,8 +172,6 @@ public class MainActivity extends AppCompatActivity
         //获取多选
         smoothCheckBox = (CheckBox) LayoutInflater.from(MainActivity.this).inflate(R.layout.file_list_main,null).findViewById(R.id.file_smooth_checkbox);
 
-      //  imageView = (ImageView) LayoutInflater.from(MainActivity.this).inflate(R.layout.photopreview,null).findViewById(R.id.photoView);
-
         fileSystem.add(0);
         //获取SharedPreferences
         mContext = getApplicationContext();
@@ -255,8 +253,6 @@ public class MainActivity extends AppCompatActivity
             }
         });
     }
-
-
     @Override
     public void onSaveInstanceState(Bundle outPersistentState) {
         super.onSaveInstanceState(outPersistentState);
@@ -560,6 +556,8 @@ public class MainActivity extends AppCompatActivity
                     docPaths.addAll(data.getStringArrayListExtra(FilePickerConst.KEY_SELECTED_DOCS));
                     intentActivity("uploadDoc",docPaths,uid,fid);
                 }
+                break;
+            default:
                 break;
         }
     }
