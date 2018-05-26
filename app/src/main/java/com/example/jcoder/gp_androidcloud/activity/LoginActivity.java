@@ -126,6 +126,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
     private void initDialog(String title, final Boolean status, final String codeVerification, final String phone){
         final EditText edit = new EditText(getApplicationContext());
+        final EditText edit1 = new EditText(getApplicationContext());
         new AlertDialog.Builder(LoginActivity.this)
                 .setView(edit)
                 .setTitle(title)
@@ -138,17 +139,22 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                             Log.e("OkUtilSMSCallBack","status true");
                             //执行发送验证码的方法
                         String code =getRandom();
-                        String phone =edit.getText().toString();
+                        final String phone =edit.getText().toString();
+                        final String verificationCode = getSMS(phone,code);
+                   //     edit.getText().clear();
 
-                        String verificationCode = getSMS(phone,code);
-                        edit.getText().clear();
-                        initDialog("请输入验证码",false,verificationCode,phone);
-
-                        }
-                        else {
-                            Log.e("OkUtilSMSCallBack","status false");
-                            //执行修改密码的方法
-                            CheckVerificationCode(edit.getText().toString(),codeVerification,phone);
+                            new AlertDialog.Builder(LoginActivity.this)
+                                    .setView(edit)
+                                    .setTitle("请输入验证码")
+                                    .setView(edit1)
+                                    .setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialog, int which) {
+                                            CheckVerificationCode(edit1.getText().toString(),verificationCode,phone);
+                                        }
+                                    })
+                                    .setNegativeButton("取消",null)
+                                    .create().show();
 
                         }
                     }
