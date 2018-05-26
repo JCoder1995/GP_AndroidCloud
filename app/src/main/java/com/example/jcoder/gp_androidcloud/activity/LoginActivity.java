@@ -3,7 +3,10 @@ package com.example.jcoder.gp_androidcloud.activity;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.support.annotation.NonNull;
@@ -35,6 +38,7 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import com.example.jcoder.gp_androidcloud.R;
 import com.example.jcoder.gp_androidcloud.Task.LoginTask;
@@ -72,6 +76,8 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     private Context mContext;
 
     private int status[] = new int[1] ;
+    //忘记密码
+    private TextView textViewForgetPass;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -105,7 +111,115 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
         mLoginFormView = findViewById(R.id.login_form);
         mProgressView = findViewById(R.id.login_progress);
+        textViewForgetPass = findViewById(R.id.forget_pass);
+        initForgetPass();
     }
+
+    private void initForgetPass() {
+        textViewForgetPass.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                initDialog("请输入需要查找的手机号",true,null,null);
+            }
+        });
+    }
+
+    private void initDialog(String title, final Boolean status, final String codeVerification, final String phone){
+        final EditText edit = new EditText(getApplicationContext());
+        final EditText edit1 = new EditText(getApplicationContext());
+        new AlertDialog.Builder(LoginActivity.this)
+                .setView(edit)
+                .setTitle(title)
+                //确认
+                .setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        Log.e("OkUtilSMSCallBack","onClick");
+                        if (status){
+                            Log.e("OkUtilSMSCallBack","status true");
+                            //执行发送验证码的方法
+                        String code =getRandom();
+                        final String phone =edit.getText().toString();
+                        final String verificationCode = getSMS(phone,code);
+                   //     edit.getText().clear();
+
+                            new AlertDialog.Builder(LoginActivity.this)
+                                    .setView(edit)
+                                    .setTitle("请输入验证码")
+                                    .setView(edit1)
+                                    .setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialog, int which) {
+                                            CheckVerificationCode(edit1.getText().toString(),verificationCode,phone);
+                                        }
+                                    })
+                                    .setNegativeButton("取消",null)
+                                    .create().show();
+
+                        }
+                    }
+                })
+                //取消
+                .setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+
+                    }
+                })
+                .create().show();
+
+    }
+    public String getSMS(String phone,String code){
+        Log.e("OkUtilSMSCallBack","send");
+       OkUtil.postSMS(phone,code, new JsonCallback<Object>() {
+           @Override
+           public void onSuccess(Response<Object> response) {
+               Log.e("OkUtilSMSCallBack",response.body().toString());
+           }
+       });
+       return null;
+    }
+
+    public void CheckVerificationCode(String inputCode,String smsCode,String phone){
+        if (smsCode.equals(inputCode)){
+            theNewPassInput(phone);
+        }
+        else {
+            Toast.makeText(LoginActivity.this,"验证失败，请重试",Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    public void theNewPassInput(final String phone){
+        final EditText editText = new EditText(getApplicationContext());
+
+        new AlertDialog.Builder(LoginActivity.this)
+                .setTitle("请输入新密码")
+                .setView(editText)
+                .setPositiveButton("确认", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        //修改密码操作
+                        updateUserPass(phone,editText.getText().toString());
+                    }
+                })
+                .setNegativeButton("取消",null)
+                .create().show();
+    }
+
+    public void updateUserPass(String phone,String pass){
+        OkUtil.postUserUpdate(phone, pass, new JsonCallback<Object>() {
+            @Override
+            public void onSuccess(Response<Object> response) {
+                String status = response.body().toString();
+                if ("success".equals(status)){
+                    Toast.makeText(LoginActivity.this,"修改成功",Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+    }
+
+
+
     public void onButtonJumpToLogin(View view){
         Intent intent = new Intent(LoginActivity.this,RegisterActivity.class);
         startActivity(intent);
@@ -334,6 +448,16 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             }
         });
 
+    }
+    public String getRandom(){
+        StringBuilder str=new StringBuilder();//定义变长字符串
+        Random random=new Random();
+        //随机生成数字，并添加到字符串
+        for(int i=0;i<8;i++){
+            str.append(random.nextInt(10));
+        }
+        String code = String.valueOf(str);
+        return code;
     }
 }
 
