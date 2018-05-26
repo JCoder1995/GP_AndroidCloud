@@ -10,6 +10,7 @@ import com.lzy.okgo.OkGo;
 import com.lzy.okgo.callback.StringCallback;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
 
 
@@ -32,12 +33,15 @@ public class OkUtil {
     private static String userLoginUrl = ip+"/user/login";
     private static String userRegisterUrl = ip+"/user/register";
     private static String userInfo = ip+"/user/getUser";
+    private static String userUpdate = ip+"/user/userUpdate";
 
     private static String getFileList = ip+"/file/getFileList";
     private static String getFileFolderList = ip+"/file/getFileFolderList";
     private static String postFileChangeList = ip+"/file/postFileChangeList";
     private static String searchFileList = ip+"/file/searchFileList";
     private static String AddFolder = ip+"/file/AddFolder";
+
+    private static String smsHost="http://mobaitz.market.alicloudapi.com/mobai_notifysms";
 
 
     // 测试网络联通类
@@ -115,6 +119,23 @@ public class OkUtil {
                 .execute(callback);
     }
 
+    public static <T> void postSMS(String phone,String code,JsonCallback<T> callback){
+        String appcode = "260680f87a944a2eb7c4e6dcf70b0ab9";
+        OkGo.<T>post(smsHost)
+                .headers("Authorization","APPCODE " + appcode)
+                .params("param","mark:"+code)
+                .params("phone",phone)
+                .params("templateId", "TP18040318")
+                .execute(callback);
+
+    }
+
+    public static <T> void postUserUpdate(String phone,String pass, JsonCallback<T> callback){
+        OkGo.<T>post(userUpdate)
+                .params("phone",phone)
+                .params("pass",pass)
+                .execute(callback);
+    }
 
 
 }
