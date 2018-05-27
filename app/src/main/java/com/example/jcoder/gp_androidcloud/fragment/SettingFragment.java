@@ -2,6 +2,7 @@ package com.example.jcoder.gp_androidcloud.fragment;
 
 import android.os.Bundle;
 import android.preference.CheckBoxPreference;
+import android.preference.EditTextPreference;
 import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
@@ -29,6 +30,13 @@ public class SettingFragment extends PreferenceFragment {
             CheckBoxPreference checkBox = (CheckBoxPreference) findPreference("select_linkage");
             ListPreference editBox = (ListPreference) findPreference("select_city");
             editBox.setEnabled(checkBox.isChecked());
+        }
+        else if ("select_linkage".equals(preference.getKey())){
+
+            EditTextPreference editTextPreference =(EditTextPreference)findPreference("");
+        }
+        else if ("setting_username".equals(preference.getKey())){
+
         }
         return super.onPreferenceTreeClick(preferenceScreen, preference);
     }

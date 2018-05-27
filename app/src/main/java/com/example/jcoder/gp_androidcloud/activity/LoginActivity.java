@@ -138,9 +138,12 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                         if (status){
                             Log.e("OkUtilSMSCallBack","status true");
                             //执行发送验证码的方法
-                        String code =getRandom();
+
+                        final String code =getRandom();
                         final String phone =edit.getText().toString();
                         final String verificationCode = getSMS(phone,code);
+
+                   //     Log.e("1234567",verificationCode);
                    //     edit.getText().clear();
 
                             new AlertDialog.Builder(LoginActivity.this)
@@ -150,7 +153,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                                     .setPositiveButton("确定", new DialogInterface.OnClickListener() {
                                         @Override
                                         public void onClick(DialogInterface dialog, int which) {
-                                            CheckVerificationCode(edit1.getText().toString(),verificationCode,phone);
+                                            CheckVerificationCode(edit1.getText().toString(),code,phone);
                                         }
                                     })
                                     .setNegativeButton("取消",null)
@@ -170,17 +173,26 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
     }
     public String getSMS(String phone,String code){
+
+        final String[] i = new String[1];
+
         Log.e("OkUtilSMSCallBack","send");
-       OkUtil.postSMS(phone,code, new JsonCallback<Object>() {
+
+        OkUtil.postSMS(phone,code, new JsonCallback<Object>() {
            @Override
            public void onSuccess(Response<Object> response) {
-               Log.e("OkUtilSMSCallBack",response.body().toString());
+               i[0] = response.body().toString();
            }
        });
-       return null;
+       return i[0];
     }
 
     public void CheckVerificationCode(String inputCode,String smsCode,String phone){
+
+        Log.d("OkUtilSMSCallBack","CheckVerificationCode inputCode"+inputCode);
+        Log.d("OkUtilSMSCallBack","CheckVerificationCode smsCode"+smsCode);
+        Log.d("OkUtilSMSCallBack","CheckVerificationCode phone"+phone);
+
         if (smsCode.equals(inputCode)){
             theNewPassInput(phone);
         }
@@ -207,6 +219,9 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     }
 
     public void updateUserPass(String phone,String pass){
+        Log.d("updateUserPassPhone",phone);
+        Log.d("updateUserPassPass",pass);
+
         OkUtil.postUserUpdate(phone, pass, new JsonCallback<Object>() {
             @Override
             public void onSuccess(Response<Object> response) {
@@ -217,8 +232,6 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             }
         });
     }
-
-
 
     public void onButtonJumpToLogin(View view){
         Intent intent = new Intent(LoginActivity.this,RegisterActivity.class);
@@ -268,7 +281,6 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             }
         }
     }
-
 
     /**
      * Attempts to sign in or register the account specified by the login form.
@@ -322,8 +334,6 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
         }
     }
-
-
 
     private boolean isEmailValid(String email) {
         //TODO: Replace this with your own logic
@@ -449,6 +459,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         });
 
     }
+
     public String getRandom(){
         StringBuilder str=new StringBuilder();//定义变长字符串
         Random random=new Random();

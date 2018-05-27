@@ -3,21 +3,25 @@
 
     <PreferenceCategory android:title="账户信息">
 
+        <!--
         <PreferenceScreen
             android:key="setting_username"
             android:summary="276759659@qq.com"
             android:title="邮箱地址">
         </PreferenceScreen>
-
+        -->
         <PreferenceScreen android:title="修改密码">
 
             <EditTextPreference
+                android:key="old_pass"
                 android:summary="请点击此处输入你的原密码"
                 android:title="请输入原密码"></EditTextPreference>
             <EditTextPreference
+                android:key="new_pass"
                 android:summary="请点击此处输入你的新密码"
                 android:title="请输入新密码"></EditTextPreference>
             <EditTextPreference
+                android:key="repeat_pass"
                 android:summary="请点击此处确认你的新密码"
                 android:title="请重复新密码"></EditTextPreference>
         </PreferenceScreen>
